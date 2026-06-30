@@ -71,9 +71,9 @@
     .orb-1 { width: 440px; height: 440px; background: radial-gradient(circle, rgba(124,58,237,.9), transparent 70%); top: -90px; right: -70px; animation: float1 17s ease-in-out infinite; }
     .orb-2 { width: 380px; height: 380px; background: radial-gradient(circle, rgba(34,211,238,.8), transparent 70%); bottom: 8%; left: -90px; animation: float2 21s ease-in-out infinite; }
     .orb-3 { width: 320px; height: 320px; background: radial-gradient(circle, rgba(37,99,235,.7), transparent 70%); top: 42%; right: 18%; animation: float3 25s ease-in-out infinite; }
-    @keyframes float1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-50px,60px) scale(1.1)} }
-    @keyframes float2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(60px,-40px) scale(1.08)} }
-    @keyframes float3 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-40px,-50px) scale(1.12)} }
+    @keyframes float1 { 0%,100%{transform:translate(0,var(--py,0px)) scale(1)} 50%{transform:translate(-50px,calc(60px + var(--py,0px))) scale(1.1)} }
+    @keyframes float2 { 0%,100%{transform:translate(0,var(--py,0px)) scale(1)} 50%{transform:translate(60px,calc(-40px + var(--py,0px))) scale(1.08)} }
+    @keyframes float3 { 0%,100%{transform:translate(0,var(--py,0px)) scale(1)} 50%{transform:translate(-40px,calc(-50px + var(--py,0px))) scale(1.12)} }
 
     .container { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 22px; }
 
@@ -195,6 +195,14 @@
       transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
     }
     .chip:hover { transform: translateY(-3px); border-color: var(--neon); box-shadow: 0 8px 20px rgba(34,211,238,.25); }
+
+    /* ===================== HERO ENTRANCE (load-in — thay scroll-reveal cho vùng trên-fold) ===================== */
+    @keyframes heroIn { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+    .hero-badge  { animation: heroIn 0.7s ease both; animation-delay: 0.05s; }
+    .hero h1     { animation: heroIn 0.8s ease both; animation-delay: 0.15s; }
+    .hero p.lead { animation: heroIn 0.8s ease both; animation-delay: 0.30s; }
+    .hero-cta    { animation: heroIn 0.8s ease both; animation-delay: 0.42s; }
+    .hero-orbit  { animation: heroIn 0.8s ease both; animation-delay: 0.55s; }
 
     /* ===================== STATS ===================== */
     .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
@@ -330,8 +338,13 @@
     .footer-links a:hover { color: var(--text); }
 
     /* ===================== REVEAL ANIMATION ===================== */
-    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.6s ease, transform 0.6s ease; }
-    .reveal.visible { opacity: 1; transform: none; }
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease; }
+    .reveal.from-left  { transform: translateX(-42px); }
+    .reveal.from-right { transform: translateX(42px); }
+    .reveal.from-up    { transform: translateY(48px); }
+    .reveal.from-scale { transform: scale(0.92); }
+    .reveal.from-blur  { filter: blur(10px); }
+    .reveal.visible { opacity: 1; transform: none; filter: none; }
 
     /* ===================== RESPONSIVE ===================== */
     @media (max-width: 900px) {
@@ -366,6 +379,14 @@
       opacity: 0; pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease; z-index: 201;
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ===================== ACCESSIBILITY: giảm motion ===================== */
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1 !important; transform: none !important; filter: none !important; }
+      .hero-badge, .hero h1, .hero p.lead, .hero-cta, .hero-orbit,
+      .orb, .shimmer, .hero-badge .dot { animation: none !important; }
+      html { scroll-behavior: auto; }
+    }
   </style>
 </head>
 <body>
@@ -456,7 +477,7 @@
   <!-- ===================== ABOUT + STATS ===================== -->
   <section id="about">
     <div class="container">
-      <div class="reveal">
+      <div class="reveal from-left">
         <span class="eyebrow" data-vi="Về chúng tôi" data-en="About Us">Về chúng tôi</span>
         <h2 class="section-title" data-vi="Đối tác tin cậy trong tự động hóa" data-en="Your trusted automation partner">Đối tác tin cậy trong tự động hóa</h2>
         <p class="section-sub" data-vi="Với hơn một thập kỷ kinh nghiệm, TEA mang đến các giải pháp điện và tự động hóa trọn gói — từ tư vấn, lập trình PLC, kết nối Protocol đến triển khai SCADA/HMI và hệ thống IoT." data-en="With over a decade of experience, TEA delivers end-to-end electrical and automation solutions — from consulting and PLC programming to protocol integration, SCADA/HMI and IoT systems.">
@@ -488,7 +509,7 @@
   <!-- ===================== SERVICES ===================== -->
   <section id="services">
     <div class="container">
-      <div class="reveal">
+      <div class="reveal from-right">
         <span class="eyebrow" data-vi="Dịch vụ" data-en="Services">Dịch vụ</span>
         <h2 class="section-title" data-vi="Giải pháp công nghệ toàn diện" data-en="Comprehensive tech solutions">Giải pháp công nghệ toàn diện</h2>
         <p class="section-sub" data-vi="Từ cấp độ thiết bị đến hệ thống — chúng tôi bao phủ trọn vẹn chuỗi tự động hóa của bạn." data-en="From device level to full systems — we cover your entire automation chain.">
@@ -539,7 +560,7 @@
   <!-- ===================== PROTOCOLS ===================== -->
   <section id="protocols">
     <div class="container">
-      <div class="reveal">
+      <div class="reveal from-up">
         <span class="eyebrow" data-vi="Giao thức hỗ trợ" data-en="Supported Protocols">Giao thức hỗ trợ</span>
         <h2 class="section-title" data-vi="Kết nối mọi thiết bị, mọi hệ thống" data-en="Connect every device, every system">Kết nối mọi thiết bị, mọi hệ thống</h2>
         <p class="section-sub" data-vi="Chuyên môn sâu về các giao thức công nghiệp phổ biến — đảm bảo tương thích toàn diện." data-en="Deep expertise in mainstream industrial protocols — ensuring full compatibility.">
@@ -566,7 +587,7 @@
   <!-- ===================== GALLERY (ảnh automation) ===================== -->
   <section id="showcase">
     <div class="container">
-      <div class="reveal">
+      <div class="reveal from-left">
         <span class="eyebrow" data-vi="Hình ảnh thực tế" data-en="Gallery">Hình ảnh thực tế</span>
         <h2 class="section-title" data-vi="Kỹ thuật &amp; tự động hóa trong hành động" data-en="Engineering &amp; automation in action">Kỹ thuật &amp; tự động hóa trong hành động</h2>
         <p class="section-sub" data-vi="Một số hình ảnh về môi trường làm việc, hệ thống điều khiển và các dự án TEA đã triển khai." data-en="A look at our work environment, control systems and projects delivered by TEA.">
@@ -618,7 +639,7 @@
   <!-- ===================== PROJECTS (TREE) ===================== -->
   <section id="projects">
     <div class="container">
-      <div class="reveal">
+      <div class="reveal from-right">
         <span class="eyebrow" data-vi="Dự án tiêu biểu" data-en="Featured Projects">Dự án tiêu biểu</span>
         <h2 class="section-title" data-vi="Các dự án đã thực hiện" data-en="Projects we've delivered">Các dự án đã thực hiện</h2>
         <p class="section-sub" data-vi="Khám phá cây dự án — bấm vào từng lĩnh vực để xem chi tiết dự án, PLC và giao thức đã triển khai." data-en="Explore the project tree — click each domain to see project details, PLCs and protocols deployed.">
@@ -638,7 +659,7 @@
   <!-- ===================== WHY US ===================== -->
   <section id="why">
     <div class="container">
-      <div class="reveal">
+      <div class="reveal from-up">
         <span class="eyebrow" data-vi="Tại sao chọn TEA" data-en="Why choose TEA">Tại sao chọn TEA</span>
         <h2 class="section-title" data-vi="Cam kết chất lượng &amp; uy tín" data-en="Quality &amp; trust, committed">Cam kết chất lượng &amp; uy tín</h2>
       </div>
@@ -666,7 +687,7 @@
   <!-- ===================== CONTACT ===================== -->
   <section id="contact">
     <div class="container">
-      <div class="reveal">
+      <div class="reveal from-left">
         <span class="eyebrow" data-vi="Liên hệ" data-en="Contact">Liên hệ</span>
         <h2 class="section-title" data-vi="Bắt đầu dự án cùng TEA" data-en="Start your project with TEA">Bắt đầu dự án cùng TEA</h2>
         <p class="section-sub" data-vi="Hãy để lại thông tin — chuyên viên của chúng tôi sẽ liên hệ tư vấn miễn phí." data-en="Leave your details — our specialists will contact you for a free consultation.">
@@ -784,6 +805,8 @@
     const sp = document.getElementById('scrollProgress');
     const sections = [...document.querySelectorAll('section[id]')];
     const navAnchors = [...navLinks.querySelectorAll('a')];
+    const orbs = document.querySelectorAll('.bg-orbs .orb');
+    const canHover = window.matchMedia('(hover: hover)').matches;
     function onScroll() {
       nav.classList.toggle('scrolled', window.scrollY > 30);
       let cur = '';
@@ -792,6 +815,13 @@
       const h = document.documentElement;
       const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
       sp.style.width = pct + '%';
+      // Parallax orbs (chỉ thiết bị có chuột) — --py được @keyframes float* dùng
+      if (canHover && orbs.length >= 3) {
+        const y = window.scrollY;
+        orbs[0].style.setProperty('--py', (y * 0.12) + 'px');
+        orbs[1].style.setProperty('--py', (y * -0.08) + 'px');
+        orbs[2].style.setProperty('--py', (y * 0.05) + 'px');
+      }
     }
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
@@ -884,7 +914,18 @@
 
     /* ---------- 6. REVEAL + COUNTER ---------- */
     const revealObs = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); } });
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const el = e.target;
+        // Stagger: delay theo vị trí giữa các .reveal anh em → grid cascade
+        if (el.parentElement) {
+          const sibs = el.parentElement.querySelectorAll(':scope > .reveal');
+          const idx = [...sibs].indexOf(el);
+          if (idx > 0) el.style.transitionDelay = Math.min(idx * 90, 540) + 'ms';
+        }
+        el.classList.add('visible');
+        revealObs.unobserve(el);
+      });
     }, { threshold: 0.12 });
     document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 

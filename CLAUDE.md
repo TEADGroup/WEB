@@ -64,10 +64,14 @@ Everything lives in one file, so the architecture is about **conventions layered
 - `renderTree()` rebuilds `#projectTree`'s `innerHTML` from that array using the current language. Expand/collapse is CSS-driven (`max-height` transition + `.expanded` class).
 - **Expansion state survives re-render** (e.g. on language switch) because open nodes are tracked in two `Set`s keyed by index: `expandedCats` (category index) and `expandedProjs` (`"ci-pi"`). `expandAll` / `collapseAll` mutate those sets then re-render. **To add a project, edit the `projects` array — do not touch the markup.**
 
-### Counters & scroll effects
+### Animation system (mandatory rule: every section animates on scroll)
 - Stats counters animate 0 → `data-target` via `requestAnimationFrame`, triggered once by an `IntersectionObserver` (`threshold: 0.5`).
-- `.reveal` elements fade in via a second `IntersectionObserver` (`threshold: 0.12`), one-shot (unobserved after).
-- `onScroll` does three jobs: toggles the navbar `.scrolled` glass background, sets the active nav link from section offsets, and updates the top scroll-progress bar width.
+- **Reveal** (`.reveal`, `IntersectionObserver` `threshold: 0.12`, one-shot): starts at `opacity:0` + a transform, settles to `.visible`. Direction variants `.reveal.from-left / .from-right / .from-up / .from-scale / .from-blur` set the initial transform/filter; section headings carry one for variety. **`.reveal.visible` must stay defined last** (same specificity) so it wins over the variant.
+- **Stagger**: in `revealObs`, before adding `.visible`, a `transition-delay` is set from the element's index among its `.reveal` siblings (`:scope > .reveal`) — so grid children (`.grid-3`, `.gallery`, `.grid-2`, `.stats`, `.protocol-row`) cascade instead of appearing at once. Capped at ~540ms.
+- **Hero (`#home`)** is above the fold, so it uses a load-in entrance (`@keyframes heroIn` with staggered `animation-delay`) instead of a scroll trigger.
+- **Parallax orbs**: `onScroll` sets a `--py` CSS var on each `.orb`; the `@keyframes float1/2/3` incorporate `var(--py)` into their translate, so parallax composes with the ambient float (an inline `transform` would be overridden by the running animation — that's why it routes through the variable). Pointer devices only (`(hover: hover)`).
+- `onScroll` now does four jobs: navbar `.scrolled`, active nav link, scroll-progress bar width, and the orb parallax above.
+- `@media (prefers-reduced-motion: reduce)` neutralizes reveal/hero/orb/shimmer motion for accessibility — preserve this guard when editing motion.
 
 ### Gallery images
 - Remote Unsplash URLs with `referrerpolicy="no-referrer"` and inline `onerror="this.style.display='none'"` so a broken/changed URL degrades to the gradient placeholder rather than a broken-image icon.
@@ -78,5 +82,5 @@ Everything lives in one file, so the architecture is about **conventions layered
 
 ## Content to keep current
 
-- **Contact details are placeholders**: phone `+84 387 981 930`, email `contact@tea-automation.com`, and the address (`294/41/18 Đường Số 8, Phường Thông Tây Hôi…`). Note "Thông Tây Hôi" matches the owner's spelling — likely a typo for "Thông Tây Hội"; confirm before treating either as canonical.
+- **Contact details are placeholders**: phone `+84 387.981.930`, email `contact@teagroup.vn`, and the address (`294/41/18 Đường Số 8, Phường Thông Tây Hôi…`). Note "Thông Tây Hôi" matches the owner's spelling — likely a typo for "Thông Tây Hội"; confirm before treating either as canonical.
 - The `projects` array and protocol/service lists are sample/representative content, not a verified project ledger.
