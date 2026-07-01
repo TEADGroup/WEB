@@ -1,0 +1,2 @@
+# Thư mục chứa ảnh dự án do admin upload (qua admin.html → "Lưu vào thư mục").
+# Ảnh được tham chiếu trong data/projects-data.js với đường dẫn data/images/xxx.jpg.

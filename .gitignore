@@ -1,0 +1,15 @@
+# Hệ điều hành
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+
+# File tạm
+_c.js
+_*.js
+*.log

@@ -288,6 +288,7 @@
     .proj-toggle:hover { background: var(--surface); border-color: var(--accent-2); }
     .proj-toggle .caret { transition: transform 0.25s ease; flex-shrink: 0; color: var(--accent-2); }
     .proj-toggle .year { margin-left: auto; font-size: 0.78rem; font-weight: 700; color: var(--neon); }
+    .proj-toggle .proj-thumb { width: 34px; height: 34px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
     .proj-node.expanded > .proj-toggle .caret { transform: rotate(90deg); }
 
     .proj-detail { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; margin-left: 16px; padding-left: 16px; border-left: 2px dashed var(--border); }
@@ -297,6 +298,12 @@
     .tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
     .tag { font-size: 0.76rem; font-weight: 600; padding: 5px 11px; border-radius: 7px; background: var(--surface-strong); border: 1px solid var(--border); }
     .tag b { color: var(--neon); }
+
+    /* Hover ảnh (desktop) — nổi theo con trỏ */
+    #treeImgTip { position: fixed; z-index: 250; width: 250px; height: 165px; border-radius: 12px; background-size: cover; background-position: center; background-color: var(--bg-2); box-shadow: var(--shadow); border: 1px solid var(--border); pointer-events: none; visibility: hidden; opacity: 0; transform: translateY(6px); transition: opacity 0.15s ease, transform 0.15s ease; }
+    #treeImgTip.show { visibility: visible; opacity: 1; transform: none; }
+    /* Touch: hiện thumbnail nhỏ trong node (desktop đã có hover-tip nên ẩn thumb) */
+    @media (hover: hover) { .proj-toggle .proj-thumb { display: none; } }
 
     /* ===================== WHY US ===================== */
     .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
@@ -636,14 +643,14 @@
     </div>
   </section>
 
-  <!-- ===================== PROJECTS (TREE) ===================== -->
+  <!-- ===================== PROJECTS (TREE + hover-ảnh) ===================== -->
   <section id="projects">
     <div class="container">
       <div class="reveal from-right">
         <span class="eyebrow" data-vi="Dự án tiêu biểu" data-en="Featured Projects">Dự án tiêu biểu</span>
         <h2 class="section-title" data-vi="Các dự án đã thực hiện" data-en="Projects we've delivered">Các dự án đã thực hiện</h2>
-        <p class="section-sub" data-vi="Khám phá cây dự án — bấm vào từng lĩnh vực để xem chi tiết dự án, PLC và giao thức đã triển khai." data-en="Explore the project tree — click each domain to see project details, PLCs and protocols deployed.">
-          Khám phá cây dự án — bấm vào từng lĩnh vực để xem chi tiết dự án, PLC và giao thức đã triển khai.
+        <p class="section-sub" data-vi="Khám phá cây dự án — bấm vào từng lĩnh vực để xem chi tiết. rê chuột lên tên dự án để xem ảnh." data-en="Explore the project tree — click each domain to see details. Hover a project name to preview its photo.">
+          Khám phá cây dự án — bấm vào từng lĩnh vực để xem chi tiết. Rê chuột lên tên dự án để xem ảnh.
         </p>
       </div>
 
@@ -654,6 +661,7 @@
 
       <div class="tree glass reveal" id="projectTree"><!-- render bằng JS --></div>
     </div>
+    <div id="treeImgTip" aria-hidden="true"></div>
   </section>
 
   <!-- ===================== WHY US ===================== -->
@@ -757,6 +765,9 @@
 
   <div class="toast" id="toast"></div>
 
+  <!-- Dữ liệu dự án (nguồn duy nhất — sửa qua admin.html) -->
+  <script src="data/projects-data.js"></script>
+
   <!-- ===================== SCRIPT ===================== -->
   <script>
     "use strict";
@@ -826,37 +837,15 @@
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
 
-    /* ---------- 5. DỮ LIỆU DỰ ÁN + TREE VIEW ---------- */
-    const projects = [
-      { ico: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20M4 20V8l5-4 5 4v12M14 20v-6h6v6M9 12h0"/></svg>',
-        vi: 'Tự động hóa nhà máy', en: 'Factory Automation',
-        items: [
-          { vi: 'Dây chuyền đóng gói tự động', en: 'Automatic Packaging Line', year: '2023', plc: 'Siemens S7-1500', protocol: 'Profinet, OPC UA', vi_desc: 'Tự động hóa toàn bộ quy trình đóng gói, tăng năng suất 35% và giảm tỷ lệ lỗi.', en_desc: 'Full packaging process automation, boosting output 35% and cutting defect rate.' },
-          { vi: 'Hệ thống kiểm tra chất lượng', en: 'Quality Inspection System', year: '2022', plc: 'Allen-Bradley CompactLogix', protocol: 'EtherNet/IP, Modbus TCP', vi_desc: 'Tích hợp camera kiểm tra và loại sản phẩm lỗi theo thời gian thực.', en_desc: 'Integrated inspection cameras to reject defective products in real time.' }
-        ] },
-      { ico: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4M9 9v0M9 13v0M9 17v0"/></svg>',
-        vi: 'Tự động hóa tòa nhà', en: 'Building Automation',
-        items: [
-          { vi: 'Quản lý HVAC thông minh', en: 'Smart HVAC Management', year: '2023', plc: 'Schneider M580', protocol: 'BACnet, Modbus', vi_desc: 'Điều hòa thông minh theo mật độ người dùng, tiết kiệm 25% năng lượng.', en_desc: 'Smart climate control based on occupancy, saving 25% energy.' },
-          { vi: 'Hệ thống chiếu sáng thông minh', en: 'Smart Lighting System', year: '2021', plc: 'Delta AS Series', protocol: 'DALI, BACnet', vi_desc: 'Chiếu sáng tự động theo ánh sáng tự nhiên và lịch trình hoạt động.', en_desc: 'Automated lighting driven by daylight and activity schedules.' }
-        ] },
-      { ico: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
-        vi: 'Năng lượng & Điện lực', en: 'Energy & Power',
-        items: [
-          { vi: 'Giám sát trạm biến áp', en: 'Substation Monitoring', year: '2022', plc: 'Siemens S7-400', protocol: 'IEC 61850, Modbus TCP', vi_desc: 'Giám sát và bảo vệ relay toàn trạm biến áp trung thế.', en_desc: 'Medium-voltage substation monitoring and relay protection.' },
-          { vi: 'Hệ thống năng lượng mặt trời', en: 'Solar Power System', year: '2023', plc: 'Mitsubishi FX5U', protocol: 'Modbus TCP, MQTT', vi_desc: 'Đồng bộ inverter mặt trời và dashboard giám sát phát điện.', en_desc: 'Synced solar inverters with a power-generation monitoring dashboard.' }
-        ] },
-      { ico: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>',
-        vi: 'IoT & Công nghiệp 4.0', en: 'IoT & Industry 4.0',
-        items: [
-          { vi: 'Dashboard thu thập dữ liệu', en: 'Data Collection Dashboard', year: '2024', plc: 'Omron NJ501', protocol: 'MQTT, OPC UA, REST', vi_desc: 'Thu thập dữ liệu từ 12 nhà máy, hiển thị KPI real-time trên Cloud.', en_desc: 'Data from 12 plants aggregated into real-time cloud KPI dashboards.' },
-          { vi: 'Bảo trì dự đoán (Predictive)', en: 'Predictive Maintenance', year: '2024', plc: 'Allen-Bradley ControlLogix', protocol: 'MQTT, OPC UA', vi_desc: 'Phân tích rung động & nhiệt độ để dự báo hỏng hóc trước khi xảy ra.', en_desc: 'Vibration & temperature analytics to predict failures before they happen.' }
-        ] }
-    ];
-
+    /* ---------- 5. DỰ ÁN (tree + hover-ảnh) — data từ data/projects-data.js ---------- */
+    const projects = (window.PROJECTS_DATA || []);
     const treeEl = document.getElementById('projectTree');
+    const treeImgTip = document.getElementById('treeImgTip');
+    const canHoverTree = window.matchMedia('(hover: hover)').matches;
     const expandedCats = new Set();
     const expandedProjs = new Set();
+    const CARET16 = '<span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>';
+    const CARET14 = '<span class="caret"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>';
 
     function renderTree() {
       treeEl.innerHTML = '';
@@ -867,7 +856,7 @@
         const toggle = document.createElement('button');
         toggle.className = 'tree-toggle';
         toggle.innerHTML =
-          '<span class="caret"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>' +
+          CARET16 +
           '<span class="cat-ico">' + cat.ico + '</span>' +
           '<span>' + cat[currentLang] + '</span>' +
           '<span class="count">' + cat.items.length + ' ' + (currentLang === 'vi' ? 'dự án' : 'projects') + '</span>';
@@ -883,10 +872,17 @@
 
           const pToggle = document.createElement('button');
           pToggle.className = 'proj-toggle';
+          const thumb = p.image ? '<img class="proj-thumb" src="' + p.image + '" alt="" referrerpolicy="no-referrer" onerror="this.remove()">' : '';
           pToggle.innerHTML =
-            '<span class="caret"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>' +
+            CARET14 + thumb +
             '<span>' + p[currentLang] + '</span>' +
             '<span class="year">' + p.year + '</span>';
+          // Hover → ảnh nổi theo con trỏ (chỉ desktop)
+          if (canHoverTree && p.image && treeImgTip) {
+            pToggle.addEventListener('mouseenter', () => { treeImgTip.style.backgroundImage = "url('" + p.image + "')"; treeImgTip.classList.add('show'); });
+            pToggle.addEventListener('mousemove', e => { treeImgTip.style.left = (e.clientX + 18) + 'px'; treeImgTip.style.top = (e.clientY + 18) + 'px'; });
+            pToggle.addEventListener('mouseleave', () => { treeImgTip.classList.remove('show'); });
+          }
           pToggle.addEventListener('click', () => { pNode.classList.toggle('expanded'); pNode.classList.contains('expanded') ? expandedProjs.add(key) : expandedProjs.delete(key); });
           pNode.appendChild(pToggle);
 
