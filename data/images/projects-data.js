@@ -12,7 +12,7 @@ window.PROJECTS_DATA = [
         "protocol": "Profinet, OPC UA",
         "vi_desc": "Tự động hóa toàn bộ quy trình đóng gói, tăng năng suất 35% và giảm tỷ lệ lỗi.",
         "en_desc": "Full packaging process automation, boosting output 35% and cutting defect rate.",
-        "image": "data/images/proj-0-0-1782879776735.jpg"
+        "image": "data/images/proj-0-0-1782881554834.jpg"
       },
       {
         "vi": "Hệ thống kiểm tra chất lượng",

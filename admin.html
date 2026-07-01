@@ -131,7 +131,11 @@
       if (document.getElementById('pw').value === PASSWORD) { sessionStorage.setItem('tea-admin-auth', '1'); openEditor(); }
       else { loginErr.textContent = '❌ Sai mật khẩu.'; document.getElementById('pw').select(); }
     });
-    document.getElementById('logout').addEventListener('click', () => { sessionStorage.removeItem('tea-admin-auth'); location.reload(); });
+    document.getElementById('logout').addEventListener('click', () => {
+      if (!confirm('Bạn có chắc muốn đăng xuất? Các thay đổi chưa lưu sẽ bị mất.')) return;
+      sessionStorage.removeItem('tea-admin-auth'); // xoá phiên đăng nhập → vào lại bắt buộc nhập mật khẩu
+      location.reload();
+    });
 
     /* ---------- data ---------- */
     const DEFAULT_ICO = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20M4 20V8l5-4 5 4v12M14 20v-6h6v6M9 12h0"/></svg>';

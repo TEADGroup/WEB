@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Giám sát nhà máy — TEA Smart Factory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ===================== THEME VARIABLES ===================== */
+    :root {
+      --accent: #7c3aed; --accent-2: #2563eb; --neon: #22d3ee;
+      --grad: linear-gradient(135deg, #7c3aed 0%, #2563eb 55%, #22d3ee 100%);
+      --radius: 16px; --shadow: 0 10px 40px rgba(0,0,0,.35); --maxw: 1240px;
+      --c-green:#22c55e; --c-amber:#f59e0b; --c-red:#ef4444; --c-gray:#94a3b8;
+    }
+    [data-theme="dark"] {
+      --bg:#0a0a14; --bg-2:#0f0f1f; --surface:rgba(255,255,255,.05); --surface-strong:rgba(255,255,255,.09);
+      --text:#f1f5f9; --text-muted:#9aa3b8; --border:rgba(255,255,255,.1); --orb-op:.4;
+    }
+    [data-theme="light"] {
+      --bg:#e6e8ee; --bg-2:#d9dce4; --surface:rgba(255,255,255,.55); --surface-strong:rgba(255,255,255,.78);
+      --text:#26324a; --text-muted:#5b6577; --border:rgba(40,50,80,.12); --orb-op:.22;
+      --shadow:0 10px 32px rgba(40,50,80,.1);
+    }
+
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.5; min-height:100vh; overflow-x:hidden; transition:background .4s,color .4s; }
+    h1,h2,h3 { font-family:'Space Grotesk',sans-serif; line-height:1.2; }
+    a { color:inherit; text-decoration:none; }
+    .grad-text { background:var(--grad); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+
+    /* nền động */
+    .bg-orbs { position:fixed; inset:0; z-index:-2; overflow:hidden; pointer-events:none; }
+    .orb { position:absolute; border-radius:50%; filter:blur(80px); opacity:var(--orb-op); }
+    .orb-1 { width:420px;height:420px; background:radial-gradient(circle,rgba(124,58,237,.9),transparent 70%); top:-100px; right:-80px; animation:float1 20s ease-in-out infinite; }
+    .orb-2 { width:360px;height:360px; background:radial-gradient(circle,rgba(34,211,238,.8),transparent 70%); bottom:6%; left:-90px; animation:float2 24s ease-in-out infinite; }
+    @keyframes float1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-40px,50px) scale(1.08)} }
+    @keyframes float2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(50px,-40px) scale(1.06)} }
+
+    .container { width:100%; max-width:var(--maxw); margin:0 auto; padding:0 22px; }
+    .glass { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); }
+
+    /* buttons */
+    .btn { display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:999px; font-weight:600; font-size:.88rem; cursor:pointer; border:1px solid transparent; font-family:inherit; transition:transform .15s,box-shadow .2s,background .2s; }
+    .btn:hover { transform:translateY(-1px); }
+    .btn-primary { background:var(--grad); color:#fff; box-shadow:0 6px 18px rgba(124,58,237,.35); }
+    .btn-ghost { background:var(--surface); border-color:var(--border); color:var(--text); }
+    .btn-ghost:hover { background:var(--surface-strong); }
+    .btn-sm { padding:7px 13px; font-size:.8rem; }
+    .icon-btn { width:40px;height:40px; border-radius:11px; display:grid; place-items:center; background:var(--surface); border:1px solid var(--border); color:var(--text); cursor:pointer; transition:background .2s,transform .2s; }
+    .icon-btn:hover { background:var(--surface-strong); transform:translateY(-1px); }
+
+    /* ===================== HEADER ===================== */
+    header.top { position:sticky; top:0; z-index:50; background:var(--surface); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-bottom:1px solid var(--border); }
+    .top-inner { display:flex; align-items:center; gap:14px; height:64px; flex-wrap:wrap; }
+    .brand { display:flex; align-items:center; gap:10px; font-family:'Space Grotesk'; font-weight:700; font-size:1.05rem; }
+    .brand img { width:38px;height:38px; object-fit:contain; border-radius:10px; }
+    .brand small { display:block; font-size:.62rem; font-weight:500; letter-spacing:.5px; color:var(--text-muted); }
+    .top-spacer { margin-left:auto; }
+    .top-actions { display:flex; align-items:center; gap:8px; }
+
+    .live { display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:999px; background:var(--surface-strong); border:1px solid var(--border); font-size:.72rem; font-weight:700; letter-spacing:.5px; font-family:'Space Grotesk'; }
+    .live-dot { width:9px;height:9px; border-radius:50%; background:var(--c-green); box-shadow:0 0 8px var(--c-green); animation:livepulse 1.4s infinite; }
+    .live.paused .live-dot { background:var(--c-amber); box-shadow:0 0 8px var(--c-amber); animation:none; }
+    @keyframes livepulse { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.45);opacity:.45;} }
+    #clock { font-family:'Space Grotesk'; font-weight:600; font-size:.85rem; color:var(--text-muted); }
+
+    /* ===================== LAYOUT ===================== */
+    main { padding:22px 0 50px; }
+    section.dash { margin-bottom:22px; }
+    .sec-head { display:flex; align-items:baseline; gap:12px; margin-bottom:14px; flex-wrap:wrap; }
+    .sec-head h2 { font-size:1.15rem; }
+    .eyebrow { font-size:.74rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--neon); }
+    .sec-head .hint { margin-left:auto; font-size:.78rem; color:var(--text-muted); }
+
+    /* ===================== CONTROL BAR ===================== */
+    .ctrl { display:flex; align-items:center; gap:18px; padding:14px 18px; flex-wrap:wrap; }
+    .ctrl-group { display:flex; align-items:center; gap:8px; }
+    .ctrl label { font-size:.78rem; font-weight:600; color:var(--text-muted); }
+    .ctrl input[type=number] { width:72px; padding:7px 9px; border-radius:9px; background:var(--bg-2); border:1px solid var(--border); color:var(--text); font-family:inherit; font-size:.9rem; font-weight:600; }
+    .ctrl input[type=number]:focus { outline:none; border-color:var(--accent); }
+
+    /* switch */
+    .switch { width:42px;height:24px; border-radius:999px; background:var(--surface-strong); border:1px solid var(--border); position:relative; cursor:pointer; transition:background .2s; flex-shrink:0; padding:0; }
+    .switch::after { content:''; position:absolute; top:2px; left:2px; width:18px;height:18px; border-radius:50%; background:var(--c-gray); transition:transform .2s,background .2s; }
+    .switch.on { background:rgba(34,197,94,.32); }
+    .switch.on::after { transform:translateX(18px); background:var(--c-green); }
+
+    /* ===================== KPI ===================== */
+    .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:14px; }
+    .kpi { padding:18px; display:flex; flex-direction:column; gap:8px; position:relative; overflow:hidden; }
+    .kpi-ico { width:38px;height:38px; border-radius:11px; display:grid; place-items:center; background:var(--grad); color:#fff; box-shadow:0 6px 16px rgba(124,58,237,.3); }
+    .kpi-num { font-family:'Space Grotesk'; font-weight:700; font-size:1.85rem; line-height:1; }
+    .kpi-num small { font-size:.8rem; font-weight:600; color:var(--text-muted); margin-left:4px; }
+    .kpi-num span.flash { animation:flash .6s ease; }
+    @keyframes flash { 0%{ text-shadow:0 0 14px var(--neon); } 100%{ text-shadow:none; } }
+    .kpi-label { font-size:.8rem; color:var(--text-muted); }
+
+    /* ===================== TRENDS ===================== */
+    .trend-grid { display:grid; grid-template-columns:1.5fr 1fr; gap:16px; }
+    .chart-card { padding:18px; display:flex; flex-direction:column; }
+    .chart-card .ch-top { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+    .chart-card h3 { font-size:1rem; }
+    .legend { display:flex; gap:8px; flex-wrap:wrap; }
+    .lg-chip { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:.74rem; font-weight:600; background:var(--surface-strong); border:1px solid var(--border); cursor:pointer; color:var(--text); font-family:inherit; transition:opacity .2s; }
+    .lg-chip .lg-dot { width:9px;height:9px; border-radius:50%; }
+    .lg-chip.off { opacity:.4; text-decoration:line-through; }
+    canvas.chart { width:100%; height:240px; display:block; }
+    .ch-now { font-family:'Space Grotesk'; font-weight:700; font-size:1.1rem; }
+
+    /* ===================== DEVICES ===================== */
+    .device-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(232px,1fr)); gap:14px; }
+    .dev { padding:16px; display:flex; flex-direction:column; gap:10px; transition:opacity .25s; }
+    .dev.is-off { opacity:.55; }
+    .dev-top { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
+    .dev-id { font-family:'Space Grotesk'; font-weight:700; font-size:.82rem; letter-spacing:.5px; color:var(--neon); }
+    .dev-name { font-size:.82rem; color:var(--text-muted); margin-top:1px; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:3px 9px; border-radius:999px; font-size:.7rem; font-weight:700; font-family:'Space Grotesk'; white-space:nowrap; }
+    .pill::before { content:''; width:7px;height:7px; border-radius:50%; background:currentColor; box-shadow:0 0 6px currentColor; }
+    .pill[data-status=running]{ color:var(--c-green); background:rgba(34,197,94,.12); }
+    .pill[data-status=idle]{ color:var(--c-gray); background:rgba(148,163,184,.14); }
+    .pill[data-status=warning]{ color:var(--c-amber); background:rgba(245,158,11,.14); }
+    .pill[data-status=fault]{ color:var(--c-red); background:rgba(239,68,68,.14); animation:blink 1.2s infinite; }
+    .pill[data-status=off]{ color:var(--text-muted); background:var(--surface-strong); }
+    @keyframes blink { 50%{ opacity:.45; } }
+    canvas.spark { width:100%; height:44px; display:block; }
+    .dev-bot { display:flex; align-items:center; gap:10px; }
+    .dev-metric { display:flex; flex-direction:column; }
+    .dev-metric b { font-family:'Space Grotesk'; font-size:1.05rem; }
+    .dev-metric small { font-size:.66rem; color:var(--text-muted); }
+    .dev-metric.spacer { margin-left:auto; }
+
+    /* ===================== ALERTS ===================== */
+    .alerts-card { padding:18px; }
+    .alert-filter { display:flex; gap:8px; margin-bottom:12px; }
+    .alert-filter button { padding:5px 12px; border-radius:999px; font-size:.78rem; font-weight:600; background:var(--surface); border:1px solid var(--border); color:var(--text-muted); cursor:pointer; font-family:inherit; }
+    .alert-filter button.active { background:var(--grad); color:#fff; border-color:transparent; }
+    .alert-list { display:flex; flex-direction:column; gap:8px; max-height:340px; overflow:auto; }
+    .alert-row { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:10px; background:var(--bg-2); border:1px solid var(--border); border-left:3px solid var(--c-gray); font-size:.84rem; }
+    .alert-row.level-fault { border-left-color:var(--c-red); }
+    .alert-row.level-warn { border-left-color:var(--c-amber); }
+    .alert-row.level-ok { border-left-color:var(--c-green); }
+    .alert-row.level-info { border-left-color:var(--accent-2); }
+    .alert-row.acked { opacity:.5; }
+    .alert-time { font-family:'Space Grotesk'; font-weight:600; font-size:.74rem; color:var(--text-muted); flex-shrink:0; }
+    .alert-msg { flex:1; }
+    .ack-btn { padding:4px 10px; border-radius:8px; font-size:.72rem; font-weight:600; background:var(--surface-strong); border:1px solid var(--border); color:var(--text); cursor:pointer; font-family:inherit; flex-shrink:0; }
+    .ack-btn:hover { background:var(--surface-strong); border-color:var(--accent); }
+    .alert-ack { font-size:.72rem; color:var(--c-green); font-weight:600; flex-shrink:0; }
+    .no-alerts { color:var(--text-muted); font-size:.86rem; padding:10px 4px; }
+
+    /* ===================== FOOTER ===================== */
+    footer { padding:26px 0; border-top:1px solid var(--border); margin-top:10px; }
+    .foot-inner { display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; align-items:center; }
+    footer small { color:var(--text-muted); }
+
+    /* ===================== REVEAL ===================== */
+    .reveal { opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s ease; }
+    .reveal.from-up { transform:translateY(40px); }
+    .reveal.visible { opacity:1; transform:none; }
+    @keyframes dashIn { from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:none;} }
+    .dash.load-1 { animation:dashIn .6s ease both; animation-delay:.05s; }
+    .dash.load-2 { animation:dashIn .6s ease both; animation-delay:.15s; }
+
+    /* ===================== RESPONSIVE ===================== */
+    @media (max-width:920px){ .trend-grid{ grid-template-columns:1fr; } }
+    @media (max-width:560px){
+      .brand small{ display:none; }
+      #clock{ display:none; }
+      .ctrl{ gap:12px; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .reveal{ opacity:1!important; transform:none!important; }
+      .orb, .live-dot, .pill[data-status=fault]{ animation:none!important; }
+      .dash.load-1,.dash.load-2{ animation:none!important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-orbs" aria-hidden="true"><span class="orb orb-1"></span><span class="orb orb-2"></span></div>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="top">
+    <div class="container top-inner">
+      <a href="../index.html" class="brand" aria-label="TEA">
+        <img src="../logo.png" alt="Logo TEA" referrerpolicy="no-referrer" onerror="this.style.display='none'" />
+        <span>TEA<span class="grad-text">·</span>
+          <small data-vi="Giám sát nhà máy" data-en="Factory Monitor">Giám sát nhà máy</small>
+        </span>
+      </a>
+      <span class="live" id="liveWrap">
+        <span class="live-dot"></span>
+        <span id="liveText">TRỰC TUYẾN</span>
+      </span>
+      <span id="clock">--:--:--</span>
+      <div class="top-spacer"></div>
+      <div class="top-actions">
+        <button class="btn btn-ghost btn-sm" id="pauseBtn">⏸ Tạm dừng</button>
+        <button class="icon-btn" id="langBtn" aria-label="Language" title="Ngôn ngữ / Language">EN</button>
+        <button class="icon-btn" id="themeBtn" title="Sáng / Tối" aria-label="Toggle theme">🌙</button>
+        <a class="icon-btn" href="../index.html" id="homeBtn" aria-label="Home" title="Về trang chủ / Home">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- CONTROL BAR -->
+    <section class="dash ctrl glass load-1">
+      <div class="ctrl-group">
+        <label data-vi="Ngưỡng cảnh báo" data-en="Warning threshold">Ngưỡng cảnh báo</label>
+        <input type="number" id="warnIn" min="40" max="100" value="76" />°C
+      </div>
+      <div class="ctrl-group">
+        <label data-vi="Ngưỡng sự cố" data-en="Fault threshold">Ngưỡng sự cố</label>
+        <input type="number" id="faultIn" min="50" max="110" value="86" />°C
+      </div>
+      <div class="top-spacer" style="margin:0;"></div>
+      <button class="btn btn-primary btn-sm" id="startAll" data-vi="▶ Khởi động tất cả" data-en="▶ Start all">▶ Khởi động tất cả</button>
+      <button class="btn btn-ghost btn-sm" id="stopAll" data-vi="⏹ Dừng tất cả" data-en="⏹ Stop all">⏹ Dừng tất cả</button>
+    </section>
+
+    <!-- KPI -->
+    <section class="dash kpi-row load-2">
+      <div class="kpi glass">
+        <div class="kpi-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg></div>
+        <div class="kpi-num"><span id="kTemp">--</span><small>°C</small></div>
+        <div class="kpi-label" data-vi="Nhiệt độ trung bình" data-en="Avg temperature">Nhiệt độ trung bình</div>
+      </div>
+      <div class="kpi glass">
+        <div class="kpi-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg></div>
+        <div class="kpi-num"><span id="kDev">--</span><small data-vi="/ 8 thiết bị" data-en="/ 8 devices">/ 8 thiết bị</small></div>
+        <div class="kpi-label" data-vi="Thiết bị đang chạy" data-en="Devices running">Thiết bị đang chạy</div>
+      </div>
+      <div class="kpi glass">
+        <div class="kpi-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+        <div class="kpi-num"><span id="kPow">--</span><small>kW</small></div>
+        <div class="kpi-label" data-vi="Công suất tiêu thụ" data-en="Power consumption">Công suất tiêu thụ</div>
+      </div>
+      <div class="kpi glass">
+        <div class="kpi-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <div class="kpi-num"><span id="kOee">--</span><small>%</small></div>
+        <div class="kpi-label" data-vi="Hiệu suất (OEE)" data-en="Efficiency (OEE)">Hiệu suất (OEE)</div>
+      </div>
+      <div class="kpi glass">
+        <div class="kpi-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <div class="kpi-num"><span id="kAlert">--</span></div>
+        <div class="kpi-label" data-vi="Cảnh báo chưa xử lý" data-en="Unacknowledged alerts">Cảnh báo chưa xử lý</div>
+      </div>
+    </section>
+
+    <!-- TRENDS -->
+    <section class="dash reveal">
+      <div class="sec-head">
+        <span class="eyebrow" data-vi="Xu hướng" data-en="Trends">Xu hướng</span>
+        <h2 data-vi="Diễn biến thời gian thực" data-en="Real-time trends">Diễn biến thời gian thực</h2>
+        <span class="hint" data-vi="Cập nhật mỗi 1 giây" data-en="Updates every 1 second">Cập nhật mỗi 1 giây</span>
+      </div>
+      <div class="trend-grid">
+        <div class="chart-card glass">
+          <div class="ch-top">
+            <h3 data-vi="Nhiệt độ theo khu vực (60s)" data-en="Temperature by zone (60s)">Nhiệt độ theo khu vực (60s)</h3>
+          </div>
+          <div class="legend" id="legend"></div>
+          <canvas class="chart" id="chartTemp"></canvas>
+        </div>
+        <div class="chart-card glass">
+          <div class="ch-top">
+            <h3 data-vi="Công suất (kW)" data-en="Power (kW)">Công suất (kW)</h3>
+            <span class="ch-now" id="powNow">-- kW</span>
+          </div>
+          <canvas class="chart" id="chartPower"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEVICES -->
+    <section class="dash reveal">
+      <div class="sec-head">
+        <span class="eyebrow" data-vi="Thiết bị" data-en="Devices">Thiết bị</span>
+        <h2 data-vi="Thiết bị trong nhà máy" data-en="Plant devices">Thiết bị trong nhà máy</h2>
+        <span class="hint" data-vi="Bấm công tắc để bật/tắt" data-en="Toggle switch to start/stop">Bấm công tắc để bật/tắt</span>
+      </div>
+      <div class="device-grid" id="deviceGrid"></div>
+    </section>
+
+    <!-- ALERTS -->
+    <section class="dash reveal">
+      <div class="sec-head">
+        <span class="eyebrow" data-vi="Sự kiện" data-en="Events">Sự kiện</span>
+        <h2 data-vi="Sự kiện gần đây" data-en="Recent events">Sự kiện gần đây</h2>
+      </div>
+      <div class="alerts-card glass">
+        <div class="alert-filter">
+          <button id="fAll" class="active" data-vi="Tất cả" data-en="All">Tất cả</button>
+          <button id="fUnack" data-vi="Chưa xác nhận" data-en="Unacknowledged">Chưa xác nhận</button>
+        </div>
+        <div class="alert-list" id="alertList"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container foot-inner">
+      <div>
+        <a class="btn btn-ghost btn-sm" href="../index.html">← <span data-vi="Về trang chủ" data-en="Back to home">Về trang chủ</span></a>
+      </div>
+      <small data-vi="© 2026 TEA · Dữ liệu được mô phỏng để minh hoạ." data-en="© 2026 TEA · Simulated data for demonstration.">© 2026 TEA · Dữ liệu được mô phỏng để minh hoạ.</small>
+    </div>
+  </footer>
+
+  <script>
+    "use strict";
+    /* ===== palette / status ===== */
+    const COLORS = { accent:'#7c3aed', accent2:'#2563eb', neon:'#22d3ee', amber:'#f59e0b', green:'#22c55e', red:'#ef4444', gray:'#94a3b8' };
+    const STATUS = {
+      running:{ vi:'Đang chạy', en:'Running' },
+      idle:   { vi:'Chờ',       en:'Idle'    },
+      warning:{ vi:'Cảnh báo',  en:'Warning' },
+      fault:  { vi:'Sự cố',     en:'Fault'   },
+      off:    { vi:'Tắt',       en:'Off'     },
+    };
+    const STATUS_COLOR = { running:COLORS.green, idle:COLORS.gray, warning:COLORS.amber, fault:COLORS.red, off:COLORS.gray };
+    const AMBIENT = 28, HIST = 60;
+    const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+    const debounce = (fn,ms)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; };
+
+    /* ===== model ===== */
+    const DEVICES = [
+      { id:'INJ-01', vi:'Máy ép nhựa 1',   en:'Injection Molder 1', zone:'A', base:62 },
+      { id:'INJ-02', vi:'Máy ép nhựa 2',   en:'Injection Molder 2', zone:'A', base:58 },
+      { id:'CNC-01', vi:'Trung tâm CNC 1', en:'CNC Machining 1',    zone:'B', base:48 },
+      { id:'CNC-02', vi:'Trung tâm CNC 2', en:'CNC Machining 2',    zone:'B', base:52 },
+      { id:'ROB-01', vi:'Robot hàn',       en:'Welding Robot',      zone:'C', base:44 },
+      { id:'ASM-01', vi:'Trạm lắp ráp',    en:'Assembly Station',   zone:'C', base:40 },
+      { id:'CHL-01', vi:'Máy làm lạnh',    en:'Chiller Unit',       zone:'D', base:34 },
+      { id:'AIR-01', vi:'Máy nén khí',     en:'Air Compressor',     zone:'D', base:38 },
+    ];
+    DEVICES.forEach(d=>{
+      d.on=true; d.temp=d.base; d.target=d.base; d.load=55+Math.random()*30; d.status='running';
+      d.hist=Array.from({length:30},()=>d.base);
+    });
+    const ZONES = [
+      { id:'A', vi:'Khu ép nhựa',  en:'Injection Zone', color:COLORS.accent },
+      { id:'B', vi:'Khu gia công', en:'Machining Zone', color:COLORS.accent2 },
+      { id:'C', vi:'Khu lắp ráp',  en:'Assembly Zone',  color:COLORS.neon },
+      { id:'D', vi:'Khu tiện ích', en:'Utilities Zone', color:COLORS.amber },
+    ];
+    const zoneHist = ZONES.map(()=>[]);
+    const powerHist = [];
+    let powerNow = 200, WARN = 76, FAULT = 86, paused = false, seeding = false;
+    const hiddenZones = new Set();
+
+    /* ===== i18n ===== */
+    let lang = localStorage.getItem('tea-lang') || 'vi';
+    const I = {
+      vi:{ live:'TRỰC TUYẾN', paused:'TẠM DỪNG', pause:'⏸ Tạm dừng', resume:'▶ Tiếp tục', ack:'Xác nhận', noAlerts:'Chưa có sự kiện nào.' },
+      en:{ live:'LIVE',       paused:'PAUSED',    pause:'⏸ Pause',     resume:'▶ Resume',   ack:'Acknowledge', noAlerts:'No events yet.' }
+    };
+    const L = k => I[lang][k];
+    const Lname = d => lang==='vi' ? d.vi : d.en;
+    const Lstatus = s => lang==='vi' ? STATUS[s].vi : STATUS[s].en;
+
+    function setLang(l){
+      lang = l; document.documentElement.lang = l;
+      document.getElementById('langBtn').textContent = l==='vi' ? 'EN' : 'VI';
+      document.querySelectorAll('[data-vi][data-en]').forEach(el=>{ const t = el.getAttribute('data-'+l); if(t!==null) el.textContent = t; });
+      updatePauseLabel();
+      renderLegend();
+      updateDeviceCards();
+      renderAlerts();
+      drawAll();
+      localStorage.setItem('tea-lang', l);
+    }
+
+    /* ===== theme ===== */
+    const themeBtn = document.getElementById('themeBtn');
+    function applyTheme(t){ document.documentElement.setAttribute('data-theme', t); themeBtn.textContent = t==='dark' ? '🌙' : '☀️'; }
+    applyTheme(localStorage.getItem('tea-theme') || 'dark');
+    themeBtn.addEventListener('click', ()=>{ const n = document.documentElement.getAttribute('data-theme')==='dark' ? 'light':'dark'; applyTheme(n); localStorage.setItem('tea-theme', n); drawAll(); });
+
+    /* ===== canvas helpers ===== */
+    function cssVar(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+    function hexA(hex,a){ const h=hex.replace('#',''); const r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16); return `rgba(${r},${g},${b},${a})`; }
+    function prep(canvas){
+      const dpr = window.devicePixelRatio||1;
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      if(!w||!h) return null;
+      if(canvas.width!==Math.round(w*dpr) || canvas.height!==Math.round(h*dpr)){ canvas.width=Math.round(w*dpr); canvas.height=Math.round(h*dpr); }
+      const ctx = canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+      return { ctx, w, h };
+    }
+    function drawLine(canvas, series, opts){
+      const c = prep(canvas); if(!c) return;
+      const { ctx, w, h } = c;
+      ctx.clearRect(0,0,w,h);
+      const padL=38, padR=12, padT=10, padB=22, cw=w-padL-padR, ch=h-padT-padB;
+      const cBorder = cssVar('--border')||'rgba(255,255,255,.1)', cMuted = cssVar('--text-muted')||'#9aa3b8';
+      const min=opts.min, max=opts.max, N=opts.points, rows=4;
+      ctx.strokeStyle=cBorder; ctx.fillStyle=cMuted; ctx.lineWidth=1; ctx.font='11px Inter,sans-serif';
+      ctx.textAlign='right'; ctx.textBaseline='middle';
+      for(let i=0;i<=rows;i++){ const y=padT+ch*i/rows; ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); ctx.stroke(); const val=max-(max-min)*i/rows; ctx.fillText(opts.fmt?opts.fmt(val):Math.round(val), padL-6, y); }
+      ctx.textAlign='center'; ctx.textBaseline='top';
+      for(let i=0;i<=6;i++){ const x=padL+cw*i/6, sec=Math.round(-N+N*i/6); ctx.fillText(sec===0?'now':sec+'s', x, h-padB+4); }
+      const X=i=>padL+cw*(N<=1?0:i/(N-1));
+      const Y=v=>padT+ch*(1-(v-min)/(max-min));
+      series.forEach(s=>{
+        if(s.show===false || s.data.length<1) return;
+        if(opts.fill){
+          const g=ctx.createLinearGradient(0,padT,0,h-padB);
+          g.addColorStop(0, hexA(s.color,.35)); g.addColorStop(1, hexA(s.color,0));
+          ctx.beginPath(); ctx.moveTo(X(0),h-padB); s.data.forEach((v,i)=>ctx.lineTo(X(i),Y(v))); ctx.lineTo(X(s.data.length-1),h-padB); ctx.closePath(); ctx.fillStyle=g; ctx.fill();
+        }
+        ctx.beginPath(); ctx.strokeStyle=s.color; ctx.lineWidth=2; ctx.lineJoin='round';
+        s.data.forEach((v,i)=>{ const x=X(i),y=Y(v); i?ctx.lineTo(x,y):ctx.moveTo(x,y); });
+        ctx.stroke();
+        const last=s.data[s.data.length-1];
+        ctx.beginPath(); ctx.fillStyle=s.color; ctx.arc(X(s.data.length-1),Y(last),3,0,Math.PI*2); ctx.fill();
+      });
+    }
+    function drawSpark(canvas, data, color){
+      const c = prep(canvas); if(!c) return;
+      const { ctx, w, h } = c; ctx.clearRect(0,0,w,h);
+      if(data.length<2) return;
+      let mn=Math.min(...data), mx=Math.max(...data); if(mx-mn<1){ mn-=1; mx+=1; } const pad=(mx-mn)*.15; mn-=pad; mx+=pad;
+      const X=i=>w*i/(data.length-1), Y=v=>h-2-(h-4)*(v-mn)/(mx-mn);
+      const g=ctx.createLinearGradient(0,0,0,h); g.addColorStop(0,hexA(color,.4)); g.addColorStop(1,hexA(color,0));
+      ctx.beginPath(); ctx.moveTo(0,h); data.forEach((v,i)=>ctx.lineTo(X(i),Y(v))); ctx.lineTo(w,h); ctx.closePath(); ctx.fillStyle=g; ctx.fill();
+      ctx.beginPath(); ctx.strokeStyle=color; ctx.lineWidth=1.6; ctx.lineJoin='round'; data.forEach((v,i)=>{ const x=X(i),y=Y(v); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }); ctx.stroke();
+    }
+    function drawAll(){
+      const tempSeries = ZONES.map((z,i)=>({ color:z.color, show:!hiddenZones.has(z.id), data:zoneHist[i] }));
+      drawLine(document.getElementById('chartTemp'), tempSeries, { min:20, max:100, points:HIST, fill:false });
+      const pmin=Math.min(...powerHist), pmax=Math.max(...powerHist), pad=Math.max(8,(pmax-pmin)*.2);
+      drawLine(document.getElementById('chartPower'), [{ color:COLORS.neon, data:powerHist }], { min:Math.floor(pmin-pad), max:Math.ceil(pmax+pad), points:HIST, fill:true, fmt:v=>Math.round(v) });
+      const pn = document.getElementById('powNow'); if(pn) pn.textContent = Math.round(powerNow)+' kW';
+      DEVICES.forEach(d=>{ if(d._els && d._els.spark) drawSpark(d._els.spark, d.hist, STATUS_COLOR[d.status]); });
+    }
+
+    /* ===== device grid ===== */
+    function buildDeviceGrid(){
+      const wrap = document.getElementById('deviceGrid'); wrap.innerHTML='';
+      DEVICES.forEach(d=>{
+        const card = document.createElement('div'); card.className='dev glass';
+        card.innerHTML =
+          '<div class="dev-top"><div><div class="dev-id">'+d.id+'</div><div class="dev-name" data-name></div></div>'+
+          '<span class="pill" data-pill><span data-stx></span></span></div>'+
+          '<canvas class="spark" data-spark></canvas>'+
+          '<div class="dev-bot"><div class="dev-metric"><b data-temp>--</b><small>°C</small></div>'+
+          '<div class="dev-metric"><b data-load>--</b><small data-vi="Tải" data-en="Load">Tải</small></div>'+
+          '<div class="dev-metric spacer"><button class="switch on" data-sw role="switch" aria-checked="true" aria-label="On/Off"></button></div></div>';
+        wrap.appendChild(card);
+        d._els = {
+          card, name:card.querySelector('[data-name]'), temp:card.querySelector('[data-temp]'),
+          load:card.querySelector('[data-load]'), stx:card.querySelector('[data-stx]'),
+          pill:card.querySelector('[data-pill]'), sw:card.querySelector('[data-sw]'), spark:card.querySelector('[data-spark]')
+        };
+        d._els.sw.addEventListener('click', ()=>{ d.on=!d.on; if(d.on){ d.target=d.base; } updateDeviceCards(); });
+      });
+    }
+    function updateDeviceCards(){
+      DEVICES.forEach(d=>{
+        const e=d._els; if(!e) return;
+        e.name.textContent = Lname(d);
+        e.temp.textContent = Math.round(d.temp);
+        e.load.textContent = Math.round(d.load);
+        e.stx.textContent = Lstatus(d.status);
+        e.pill.setAttribute('data-status', d.status);
+        e.sw.classList.toggle('on', d.on);
+        e.sw.setAttribute('aria-checked', d.on?'true':'false');
+        e.card.classList.toggle('is-off', !d.on);
+      });
+    }
+
+    /* ===== legend ===== */
+    function renderLegend(){
+      const wrap = document.getElementById('legend'); wrap.innerHTML='';
+      ZONES.forEach(z=>{
+        const chip = document.createElement('button');
+        chip.className = 'lg-chip' + (hiddenZones.has(z.id)?' off':'');
+        chip.innerHTML = '<span class="lg-dot" style="background:'+z.color+'"></span>'+(lang==='vi'?z.vi:z.en);
+        chip.addEventListener('click', ()=>{ hiddenZones.has(z.id) ? hiddenZones.delete(z.id) : hiddenZones.add(z.id); renderLegend(); drawAll(); });
+        wrap.appendChild(chip);
+      });
+    }
+
+    /* ===== alerts ===== */
+    const alerts = [];
+    let alertsDirty = false, alertFilter = 'all';
+    function pushAlert(d, prev){
+      if(seeding) return;
+      const name = Lname(d);
+      let vi, en, level;
+      if(d.status==='fault'){ vi='⛔ '+name+' — sự cố, dừng khẩn cấp ('+Math.round(d.temp)+'°C)'; en='⛔ '+name+' — fault, emergency stop ('+Math.round(d.temp)+'°C)'; level='fault'; }
+      else if(d.status==='warning'){ vi='⚠ '+name+' — vượt ngưỡng nhiệt ('+Math.round(d.temp)+'°C)'; en='⚠ '+name+' — over temperature ('+Math.round(d.temp)+'°C)'; level='warn'; }
+      else if(d.status==='running' && prev!=='running' && prev!=='off'){ vi='✓ '+name+' — đã phục hồi'; en='✓ '+name+' — recovered'; level='ok'; }
+      else return;
+      alerts.unshift({ t:new Date(), vi, en, level, ack:false });
+      if(alerts.length>40) alerts.pop();
+      alertsDirty = true;
+    }
+    function renderAlerts(){
+      alertsDirty = false;
+      const list = document.getElementById('alertList');
+      const shown = alerts.filter(a=> alertFilter==='unacked' ? !a.ack : true);
+      if(!shown.length){ list.innerHTML = '<p class="no-alerts">'+L('noAlerts')+'</p>'; return; }
+      list.innerHTML='';
+      const pad = n=>String(n).padStart(2,'0');
+      shown.forEach(a=>{
+        const row = document.createElement('div');
+        row.className = 'alert-row level-'+a.level + (a.ack?' acked':'');
+        const ts = pad(a.t.getHours())+':'+pad(a.t.getMinutes())+':'+pad(a.t.getSeconds());
+        const msg = lang==='vi' ? a.vi : a.en;
+        row.innerHTML = '<span class="alert-time">'+ts+'</span><span class="alert-msg">'+msg+'</span>' + (a.ack ? '<span class="alert-ack">'+L('ack')+' ✓</span>' : '<button class="ack-btn">'+L('ack')+'</button>');
+        if(!a.ack){ row.querySelector('.ack-btn').addEventListener('click', ()=>{ a.ack=true; alertsDirty=true; renderAlerts(); updateKPIs(); }); }
+        list.appendChild(row);
+      });
+    }
+
+    /* ===== sim ===== */
+    function zoneTempOf(z){ const ds=DEVICES.filter(d=>d.zone===z.id && d.on); if(!ds.length) return AMBIENT; return ds.reduce((s,d)=>s+d.temp,0)/ds.length; }
+    function computePower(){ const on=DEVICES.filter(d=>d.on); const loadSum=on.reduce((s,d)=>s+d.load,0); return 60 + loadSum*0.35; }
+    function advance(){
+      DEVICES.forEach(d=>{
+        if(!d.on){
+          d.status='off'; d.temp += (AMBIENT-d.temp)*0.06; d.load*=0.82; if(d.load<0.5) d.load=0;
+        } else {
+          if(Math.random()<0.05) d.target = d.base + (Math.random()-0.5)*22;
+          d.temp += (d.target-d.temp)*0.10 + (Math.random()-0.5)*2.2; d.temp = clamp(d.temp,15,115);
+          d.load += (Math.random()-0.5)*9; d.load = clamp(d.load,4,100);
+          const prev = d.status;
+          if(d.temp>FAULT) d.status='fault';
+          else if(d.temp>WARN) d.status='warning';
+          else if(d.load<14) d.status='idle';
+          else d.status='running';
+          if(d.status!==prev) pushAlert(d, prev);
+        }
+        d.hist.push(d.temp); if(d.hist.length>30) d.hist.shift();
+      });
+      ZONES.forEach((z,i)=>{ zoneHist[i].push(zoneTempOf(z)); if(zoneHist[i].length>HIST) zoneHist[i].shift(); });
+      const tgt = computePower();
+      powerNow += (tgt-powerNow)*0.2 + (Math.random()-0.5)*5; powerNow = clamp(powerNow,80,420);
+      powerHist.push(powerNow); if(powerHist.length>HIST) powerHist.shift();
+    }
+
+    /* ===== KPI ===== */
+    function setKpi(id, val){
+      const el = document.getElementById(id);
+      const s = String(val);
+      if(el.textContent!==s){ el.textContent=s; el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }
+    }
+    function updateKPIs(){
+      const on = DEVICES.filter(d=>d.on);
+      const run = on.filter(d=>d.status==='running').length;
+      const avg = on.length ? on.reduce((s,d)=>s+d.temp,0)/on.length : 0;
+      const oee = on.length ? (run/on.length)*100*0.92 : 0;
+      const unack = alerts.filter(a=>!a.ack).length;
+      setKpi('kTemp', avg.toFixed(0));
+      setKpi('kDev', run+'/'+DEVICES.length);
+      setKpi('kPow', Math.round(powerNow));
+      setKpi('kOee', oee.toFixed(0));
+      setKpi('kAlert', unack);
+    }
+
+    /* ===== clock / pause ===== */
+    const clockEl = document.getElementById('clock');
+    function updateClock(now){ const p=n=>String(n).padStart(2,'0'); clockEl.textContent = p(now.getHours())+':'+p(now.getMinutes())+':'+p(now.getSeconds()); }
+    const pauseBtn = document.getElementById('pauseBtn'), liveWrap = document.getElementById('liveWrap'), liveText = document.getElementById('liveText');
+    function updatePauseLabel(){
+      pauseBtn.textContent = paused ? L('resume') : L('pause');
+      liveText.textContent = paused ? L('paused') : L('live');
+      liveWrap.classList.toggle('paused', paused);
+    }
+    pauseBtn.addEventListener('click', ()=>{ paused=!paused; updatePauseLabel(); });
+
+    /* ===== controls ===== */
+    document.getElementById('warnIn').addEventListener('input', e=>{ const v=+e.target.value; if(!isNaN(v)) WARN=clamp(v,30,FAULT-1); });
+    document.getElementById('faultIn').addEventListener('input', e=>{ const v=+e.target.value; if(!isNaN(v)) FAULT=clamp(v,WARN+1,120); });
+    document.getElementById('startAll').addEventListener('click', ()=>{ DEVICES.forEach(d=>{ d.on=true; d.target=d.base; }); updateDeviceCards(); });
+    document.getElementById('stopAll').addEventListener('click', ()=>{ DEVICES.forEach(d=>{ d.on=false; }); updateDeviceCards(); });
+    document.getElementById('langBtn').addEventListener('click', ()=> setLang(lang==='vi'?'en':'vi'));
+    document.getElementById('fAll').addEventListener('click', ()=>{ alertFilter='all'; syncFilters(); renderAlerts(); });
+    document.getElementById('fUnack').addEventListener('click', ()=>{ alertFilter='unacked'; syncFilters(); renderAlerts(); });
+    function syncFilters(){ document.getElementById('fAll').classList.toggle('active', alertFilter==='all'); document.getElementById('fUnack').classList.toggle('active', alertFilter==='unacked'); }
+
+    /* ===== reveal ===== */
+    const revealObs = new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); revealObs.unobserve(e.target); } }); }, { threshold:0.12 });
+    document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));
+
+    /* ===== main loop ===== */
+    function tick(){
+      const now = new Date();
+      updateClock(now);
+      if(paused) return;
+      advance();
+      updateKPIs();
+      updateDeviceCards();
+      if(alertsDirty) renderAlerts();
+      drawAll();
+    }
+
+    /* ===== init ===== */
+    buildDeviceGrid();
+    renderLegend();
+    seeding = true;
+    for(let i=0;i<HIST;i++) advance();
+    seeding = false;
+    // seed a couple of context alerts (acked)
+    alerts.push({ t:new Date(Date.now()-180000), vi:'ℹ Hệ thống giám sát đã trực tuyến.', en:'ℹ Monitoring system online.', level:'info', ack:true });
+    alerts.push({ t:new Date(Date.now()-60000),  vi:'ℹ Đã đồng bộ 8 thiết bị trên 4 khu vực.', en:'ℹ Synced 8 devices across 4 zones.', level:'info', ack:true });
+    alertsDirty = true;
+
+    setLang(lang);          // applies language + renders dynamic + drawAll
+    updatePauseLabel();
+    updateClock(new Date());
+    tick();
+    setInterval(tick, 1000);
+    window.addEventListener('resize', debounce(drawAll, 150));
+  </script>
+</body>
+</html>
