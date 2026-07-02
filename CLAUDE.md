@@ -15,10 +15,17 @@ These two rules are non-negotiable and override default behavior:
 
 ## Stack & constraints
 
-- **Single self-contained file**: `index.html` — all HTML, CSS (`<style>`), and JS (`<script>`) inline. No framework, no build step, no package manager, no dependencies.
-- **Vanilla JS only** (ES2015+). No TypeScript, no bundler.
-- The only other tracked assets are `logo.png` (referenced as `<img src="logo.png">` in navbar + footer) and `.gitignore`.
-- Keep it a single file. If you split assets out, update `logo.png` references and the deploy path.
+- **Multi-file, zero-build static site.** Three HTML pages, each linking shared + page-specific CSS/JS from `assets/`. No framework, no build step, no package manager, no dependencies.
+  - `index.html` — marketing site (main page)
+  - `admin.html` — project editor (password-gated, client-side only)
+  - `dashboard/index.html` — live factory-monitoring dashboard (simulated data)
+- **Asset layout** (see `assets/`):
+  - `assets/css/base.css` — **shared**: theme tokens (`:root`, `[data-theme="dark"]`, `[data-theme="light"]`), reset, and design primitives (`.glass`, `.btn`, `.icon-btn`, `.container`, `.grad-text`, `.reveal`). Loaded **first** by every page.
+  - `assets/css/{main,admin,dashboard}.css` — page-specific; override tokens/primitives where needed (e.g. admin narrows `--maxw`, dashboard adds status colors).
+  - `assets/js/theme.js` + `assets/js/i18n.js` — **shared**: `TEA.initTheme()` and `TEA.applyTranslations()` exposed on a `window.TEA` namespace.
+  - `assets/js/{main,admin,dashboard}.js` — page-specific logic.
+- **Vanilla JS only** (ES2015+). No TypeScript, no bundler. **Plain `<script src>` tags, NOT ES modules** — the site is also opened via `file://`, where ES module imports fail on CORS. Load order matters: shared (`theme.js`, `i18n.js`) → data (`data/projects-data.js`, where used) → page JS. Scripts sit at the end of `<body>` so the DOM is ready.
+- Other tracked assets: `logo.png`, `data/projects-data.js` (project data source of truth), `data/images/` (uploaded project photos).
 
 ## Commands
 
@@ -29,9 +36,8 @@ There is no build/test/lint tooling. Workflow is manual:
 start index.html                       # Windows: open in default browser
 python -m http.server 8000             # then visit http://localhost:8000
 
-# Sanity-check the embedded JS syntax before committing. The script lives inline
-# in index.html, so extract it first, then:
-node --check index.js                  # extract the <script>…</script> block to index.js
+# Sanity-check JS syntax before committing (JS now lives in separate files):
+node --check assets/js/main.js         # repeat for admin.js / dashboard.js / theme.js / i18n.js
 
 # Git identity is set locally (generic noreply email by design):
 git config user.name "TEA Automation"
@@ -46,23 +52,23 @@ Hosted via **GitHub Pages** (static, free). Push `main` to the GitHub remote and
 
 ## Architecture (the non-obvious parts)
 
-Everything lives in one file, so the architecture is about **conventions layered on top of vanilla DOM**, not separate modules.
+The codebase is now split across files (see Stack & constraints), but the architecture is still about **conventions layered on top of vanilla DOM**, not modules. Shared conventions live in `base.css` + `theme.js` + `i18n.js`; each page composes them.
 
 ### Theming — CSS variables + `data-theme`
-- Theme is driven entirely by CSS custom properties. `:root` holds constants (`--accent`, `--grad`, `--radius`…); `[data-theme="dark"]` and `[data-theme="light"]` on `<html>` override the surface/text/bg variables. **To restyle, change variables — not component CSS.**
+- Theme is driven entirely by CSS custom properties. `base.css` `:root` holds constants (`--accent`, `--grad`, `--radius`…); `[data-theme="dark"]` and `[data-theme="light"]` on `<html>` override the surface/text/bg variables. **To restyle, change variables — not component CSS.** Pages may override a token in their own CSS (e.g. admin's `--maxw`).
 - Light theme was deliberately softened (`--bg: #e6e8ee`, lower `--orb-op`) to reduce glare. Preserve that intent when tweaking.
-- JS in `applyTheme()` flips `data-theme` on `<html>` and swaps the SVG icon. Persisted in `localStorage` key **`tea-theme`** (default `dark`).
+- JS in `TEA.initTheme({ btn, onTheme })` (`assets/js/theme.js`) flips `data-theme` on `<html>`, persists it in `localStorage` key **`tea-theme`** (default `dark`), and calls `onTheme(theme)` so each page can render its own icon (index swaps an SVG's innerHTML; admin/dashboard swap an emoji).
 
 ### Bilingual — `data-vi` / `data-en` attributes
 - Every translatable element carries both `data-vi="…"` and `data-en="…"`. The Vietnamese text is also written as the element's live `textContent` (the visible default).
-- `setLang(lang)` queries all `[data-vi][data-en]` elements and sets `textContent = el.getAttribute('data-' + lang)`. Form placeholders use the parallel `data-ph-vi` / `data-ph-en` pair.
-- **Calling `setLang` re-renders the tree** (it's the last thing `setLang` does), so the project tree follows the language. Language persists in `localStorage` key **`tea-lang`** (default `vi`).
+- `TEA.applyTranslations(lang)` (`assets/js/i18n.js`) queries all `[data-vi][data-en]` elements and sets `textContent = el.getAttribute('data-' + lang)`. Form placeholders use the parallel `data-ph-vi` / `data-ph-en` pair. Language persists in `localStorage` key **`tea-lang`** (default `vi`).
+- Each page owns a `setLang(lang)` that calls `TEA.applyTranslations(lang)` **then** does its page-specific re-render: index re-renders the project tree (last step of `setLang` in `main.js`); dashboard re-renders legend/devices/alerts/charts. So the tree follows the language.
 - Consequence: when adding any translatable content, you must set **all three** (the live text + both `data-*` attrs), or it won't switch / will show stale text.
 
 ### Project tree view — data-driven, state-preserving
-- Source of truth is the `projects` array in the script: nested `[{vi, en, ico, items:[{vi, en, year, plc, protocol, vi_desc, en_desc}]}]`.
+- Source of truth is `window.PROJECTS_DATA` in `data/projects-data.js`: nested `[{vi, en, ico, items:[{vi, en, year, plc, protocol, vi_desc, en_desc, image}]}]`. `main.js` reads it into `projects`. (Editing is done in `admin.html`, which writes the file back to `data/`.)
 - `renderTree()` rebuilds `#projectTree`'s `innerHTML` from that array using the current language. Expand/collapse is CSS-driven (`max-height` transition + `.expanded` class).
-- **Expansion state survives re-render** (e.g. on language switch) because open nodes are tracked in two `Set`s keyed by index: `expandedCats` (category index) and `expandedProjs` (`"ci-pi"`). `expandAll` / `collapseAll` mutate those sets then re-render. **To add a project, edit the `projects` array — do not touch the markup.**
+- **Expansion state survives re-render** (e.g. on language switch) because open nodes are tracked in two `Set`s keyed by index: `expandedCats` (category index) and `expandedProjs` (`"ci-pi"`). `expandAll` / `collapseAll` mutate those sets then re-render. **To add a project, edit `data/projects-data.js` (or use `admin.html`) — do not touch the markup.**
 
 ### Animation system (mandatory rule: every section animates on scroll)
 - Stats counters animate 0 → `data-target` via `requestAnimationFrame`, triggered once by an `IntersectionObserver` (`threshold: 0.5`).
@@ -79,6 +85,11 @@ Everything lives in one file, so the architecture is about **conventions layered
 
 ### Contact form
 - **Client-side validation only** (`novalidate` + a regex email check). Submitting shows a toast and resets; nothing is sent anywhere. The toast text is also bilingual via `currentLang`.
+
+### Responsive / mobile (`index.html`)
+- The fixed navbar carries icon buttons (lang, theme, admin, dashboard, hamburger). On screens `≤ 560px` the **admin & dashboard** icon buttons are hidden and instead appear as `nav-mobile-only` links inside the hamburger dropdown, so the bar never overflows.
+- Mobile menu (`main.js`) closes on: link click, click outside, and `Escape`; it toggles `aria-expanded` on the hamburger and locks body scroll while open.
+- Form inputs use `font-size: 16px` to prevent iOS Safari's auto-zoom-on-focus. `.footer-links` uses `flex-wrap` so the links reflow on narrow screens instead of overflowing.
 
 ## Content to keep current
 

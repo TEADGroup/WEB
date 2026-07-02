@@ -1,0 +1,121 @@
+/* =====================================================================
+   base.css — PHẦN CHUNG của toàn bộ site (index / admin / dashboard)
+   ---------------------------------------------------------------------
+   Chứa: tokens theme (sáng/tối), reset, .container, .grad-text,
+         các "primitive" thiết kế (.glass, .btn, .icon-btn), .reveal.
+   Nguyên tắc (xem CLAUDE.md): để restyle → đổi BIẾN trong :root,
+   không sửa CSS component. Mỗi trang nạp file này TRƯỚC, rồi nạp
+   file CSS riêng của trang đó (được phép override).
+   ===================================================================== */
+
+/* ===================== THEME VARIABLES ===================== */
+:root {
+  --accent: #7c3aed;       /* tím */
+  --accent-2: #2563eb;     /* xanh dương */
+  --neon: #22d3ee;         /* cyan neon */
+  --grad: linear-gradient(135deg, #7c3aed 0%, #2563eb 55%, #22d3ee 100%);
+  --radius: 16px;
+  --shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+  --maxw: 1180px;
+}
+
+/* Dark (mặc định — hợp phong cách tương lai) */
+[data-theme="dark"] {
+  --bg: #0a0a14;
+  --bg-2: #0f0f1f;
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-strong: rgba(255, 255, 255, 0.08);
+  --text: #f1f5f9;
+  --text-muted: #9aa3b8;
+  --border: rgba(255, 255, 255, 0.1);
+  --hero-glow: rgba(124, 58, 237, 0.35);
+  --orb-op: 0.55;
+}
+
+/* Light — đã làm DỊU (đỡ chói mắt): nền xám mềm, bớt trắng tinh, giảm tương phản */
+[data-theme="light"] {
+  --bg: #e6e8ee;                 /* xám xanh dịu thay vì trắng sáng */
+  --bg-2: #d9dce4;
+  --surface: rgba(255, 255, 255, 0.42);   /* bớt chói */
+  --surface-strong: rgba(255, 255, 255, 0.66);
+  --text: #26324a;               /* xanh đậm thay vì đen tuyền → đỡ gắt */
+  --text-muted: #5b6577;
+  --border: rgba(40, 50, 80, 0.12);
+  --hero-glow: rgba(37, 99, 235, 0.14);
+  --orb-op: 0.28;
+  --shadow: 0 10px 32px rgba(40, 50, 80, 0.1);
+}
+
+/* ===================== RESET ===================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+a { color: inherit; text-decoration: none; }
+img, svg { display: block; }
+ul { list-style: none; }
+
+/* ===================== LAYOUT HELPERS ===================== */
+.container { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 22px; }
+
+h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; line-height: 1.15; }
+.grad-text {
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ===================== GLASS CARD ===================== */
+.glass {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: var(--radius);
+}
+
+/* ===================== BUTTONS ===================== */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 24px; border-radius: 999px;
+  font-weight: 600; font-size: 0.95rem; cursor: pointer;
+  border: 1px solid transparent;
+  transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.2s ease;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn-primary { background: var(--grad); color: #fff; box-shadow: 0 8px 24px rgba(124,58,237,.4); }
+.btn-primary:hover { box-shadow: 0 10px 34px rgba(124,58,237,.6), 0 0 0 4px rgba(124,58,237,.14); }
+.btn-ghost { background: var(--surface); border-color: var(--border); color: var(--text); }
+
+.icon-btn {
+  width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center;
+  background: var(--surface); border: 1px solid var(--border);
+  cursor: pointer; color: var(--text);
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.icon-btn:hover { background: var(--surface-strong); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(124,58,237,.25); }
+.btn:active, .icon-btn:active { transform: scale(.96); }
+.lang-btn { width: auto; padding: 0 12px; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; }
+
+/* ===================== REVEAL ANIMATION (chung) =====================
+   .reveal.visible phải luôn nằm CUỐI (cùng specificity) để thắng các variant. */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease; }
+.reveal.from-left  { transform: translateX(-42px); }
+.reveal.from-right { transform: translateX(42px); }
+.reveal.from-up    { transform: translateY(48px); }
+.reveal.from-scale { transform: scale(0.92); }
+.reveal.from-blur  { filter: blur(10px); }
+.reveal.visible { opacity: 1; transform: none; filter: none; }
+
+/* ===================== ACCESSIBILITY: giảm motion (phần chung) ===================== */
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1 !important; transform: none !important; filter: none !important; }
+  html { scroll-behavior: auto; }
+}
