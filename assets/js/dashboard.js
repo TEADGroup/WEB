@@ -65,13 +65,14 @@ function setLang(l){
   updateDeviceCards();
   renderAlerts();
   drawAll();
+  if (reportOverlay && reportOverlay.open) renderReport();
 }
 
 /* ===== theme (dùng TEA.initTheme chung) ===== */
 const themeBtn = document.getElementById('themeBtn');
 TEA.initTheme({ btn: themeBtn, onTheme: t => { themeBtn.textContent = t==='dark' ? '🌙' : '☀️'; } });
 // đổi theme → vẽ lại chart theo màu mới (drawAll định nghĩa sau; chỉ chạy khi click)
-themeBtn.addEventListener('click', () => { if (typeof drawAll === 'function') drawAll(); });
+themeBtn.addEventListener('click', () => { if (typeof drawAll === 'function') drawAll(); if (reportOverlay && reportOverlay.open) renderReport(); });
 
 /* ===== canvas helpers ===== */
 function cssVar(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
@@ -103,13 +104,14 @@ function drawLine(canvas, series, opts){
   const { ctx, w, h } = c;
   ctx.clearRect(0,0,w,h);
   const padL=38, padR=12, padT=10, padB=22, cw=w-padL-padR, ch=h-padT-padB;
-  const cBorder = cssVar('--border')||'rgba(255,255,255,.1)', cMuted = cssVar('--text-muted')||'#9aa3b8';
+  const cBorder = opts.gridColor || cssVar('--border')||'rgba(255,255,255,.1)', cMuted = opts.axisColor || cssVar('--text-muted')||'#9aa3b8';
   const min=opts.min, max=opts.max, N=opts.points, rows=4;
   ctx.strokeStyle=cBorder; ctx.fillStyle=cMuted; ctx.lineWidth=1; ctx.font='11px Inter,sans-serif';
   ctx.textAlign='right'; ctx.textBaseline='middle';
   for(let i=0;i<=rows;i++){ const y=padT+ch*i/rows; ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); ctx.stroke(); const val=max-(max-min)*i/rows; ctx.fillText(opts.fmt?opts.fmt(val):Math.round(val), padL-6, y); }
   ctx.textAlign='center'; ctx.textBaseline='top';
-  for(let i=0;i<=6;i++){ const x=padL+cw*i/6, sec=Math.round(-N+N*i/6); ctx.fillText(sec===0?'now':sec+'s', x, h-padB+4); }
+  const xl=opts.xLabels, xlen=xl&&xl.length;
+  for(let i=0;i<=6;i++){ const x=padL+cw*i/6; let label; if(xlen){ const li=Math.round(i*(xlen-1)/6); label=xl[li]||''; } else { const sec=Math.round(-N+N*i/6); label=sec===0?'now':sec+'s'; } ctx.fillText(label, x, h-padB+4); }
   const X=i=>padL+cw*(N<=1?0:i/(N-1));
   const Y=v=>padT+ch*(1-(v-min)/(max-min));
   series.forEach(s=>{
@@ -144,8 +146,7 @@ function drawLine(canvas, series, opts){
         tipRows.push('<span class="tip-row"><span class="tip-dot" style="background:'+s.color+'"></span><span class="tip-name">'+(s.name||'')+'</span><b>'+(opts.fmt?opts.fmt(v):Math.round(v))+' '+opts.unit+'</b></span>');
       });
       if(TIP && tipRows.length){
-        const sec = N - 1 - idx;
-        const tlabel = sec <= 0 ? (lang==='vi'?'Hiện tại':'Now') : '-'+sec+'s';
+        const tlabel = opts.tipTime ? opts.tipTime(idx) : (function(){ const sec=N-1-idx; return sec<=0?(lang==='vi'?'Hiện tại':'Now'):'-'+sec+'s'; })();
         TIP.innerHTML = '<div class="tip-title">'+(opts.tipTitle||'')+' · '+tlabel+'</div>' + tipRows.join('');
         TIP.style.display = 'block';
         const tw = TIP.offsetWidth, th = TIP.offsetHeight;
@@ -357,6 +358,326 @@ function tick(){
 }
 
 /* ===== init ===== */
+
+/* ===== REPORT (xuất báo cáo theo ngày / khoảng tuỳ chỉnh) ===== */
+/* Dữ liệu dashboard là mô phỏng, không có lịch sử ngày → sinh lịch sử giả định
+   DETERMINISTIC theo mỗi timestamp (cùng thời điểm → cùng giá trị dù xem ở preset nào).
+   Cùng khoảng → cùng báo cáo. Xem mandatory-workflow / animation-system cho rule. */
+const reportOverlay = document.getElementById('reportOverlay');
+const toastEl = document.getElementById('toast');
+const reportCache = { start:null, end:null, data:null, preset:'today' };
+let printMode = false;
+
+const IR = {
+  vi:{ close:'Đóng', avgTemp:'Nhiệt độ TB', maxTemp:'Nhiệt độ cao nhất', totWarn:'Cảnh báo', faults:'Sự cố', avgPow:'Công suất TB', oee:'Hiệu suất (OEE)',
+       thDevice:'Thiết bị', thZone:'Khu vực', thTime:'Thời điểm', thPeak:'Đỉnh (°C)', thLevel:'Mức', thDur:'Thời lượng',
+       thAvg:'TB (°C)', thMax:'Max (°C)', thWarn:'Cảnh báo', thFault:'Sự cố', thStatus:'Trạng thái',
+       lvlWarn:'Cảnh báo', lvlFault:'Sự cố', noWarn:'Không có cảnh báo nhiệt độ trong kỳ này.',
+       invalidRange:'⚠ Khoảng ngày không hợp lệ.', csvDone:'✓ Đã tải file CSV.', printStart:'🖨 Đang chuẩn bị báo cáo in…',
+       colTime:'Thời gian', colPower:'Công suất (kW)', plantAvg:'TB nhà máy',
+       csvTitle:'Báo cáo nhiệt độ nhà máy', periodLbl:'Kỳ báo cáo', genLbl:'Sinh lúc',
+       warnTh:'Ngưỡng cảnh báo (°C)', faultTh:'Ngưỡng sự cố (°C)', metric:'Chỉ số', value:'Giá trị',
+       secSummary:'TÓM TẮT', secTempTrend:'XU HƯỚNG NHIỆT ĐỘ (°C)', secPowerTrend:'XU HƯỚNG CÔNG SUẤT (kW)',
+       secWarn:'CẢNH BÁO NHIỆT ĐỘ', secDev:'TÓM TẮT THEO THIẾT BỊ' },
+  en:{ close:'Close', avgTemp:'Avg temp', maxTemp:'Max temp', totWarn:'Warnings', faults:'Faults', avgPow:'Avg power', oee:'Efficiency (OEE)',
+       thDevice:'Device', thZone:'Zone', thTime:'Time', thPeak:'Peak (°C)', thLevel:'Level', thDur:'Duration',
+       thAvg:'Avg (°C)', thMax:'Max (°C)', thWarn:'Warn', thFault:'Fault', thStatus:'Status',
+       lvlWarn:'Warning', lvlFault:'Fault', noWarn:'No temperature warnings in this period.',
+       invalidRange:'⚠ Invalid date range.', csvDone:'✓ CSV downloaded.', printStart:'🖨 Preparing print…',
+       colTime:'Time', colPower:'Power (kW)', plantAvg:'Plant avg',
+       csvTitle:'Plant temperature report', periodLbl:'Period', genLbl:'Generated',
+       warnTh:'Warning threshold (°C)', faultTh:'Fault threshold (°C)', metric:'Metric', value:'Value',
+       secSummary:'SUMMARY', secTempTrend:'TEMPERATURE TREND (°C)', secPowerTrend:'POWER TREND (kW)',
+       secWarn:'TEMPERATURE WARNINGS', secDev:'PER-DEVICE SUMMARY' }
+};
+const LR = k => IR[lang][k];
+
+/* ---- RNG + hashing (deterministic per timestamp) ---- */
+function hashStr(s){ let h=2166136261>>>0; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return h>>>0; }
+function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+
+const DAYMS = 86400000;
+function pickStep(spanDays){ if(spanDays<=2) return 3600000; if(spanDays<=14) return 21600000; return DAYMS; }
+
+/* Bơm sự kiện nhiệt có chủ đích (ramp/dwell/decay) cho mỗi (thiết bị, ngày) → warning run liên tục. */
+function buildWindows(startMs, endMs){
+  const wins = {};
+  const sd = new Date(startMs); sd.setHours(0,0,0,0);
+  for(let dayMs=sd.getTime(); dayMs<=endMs; dayMs+=DAYMS){
+    for(const d of DEVICES){
+      const r = mulberry32(hashStr(d.id+'|day|'+dayMs));
+      if(r() < 0.5){
+        const startHour = 7 + Math.floor(r()*13);
+        const durH = 2 + Math.floor(r()*4);
+        const isFault = r() < 0.4;
+        const targetPeak = isFault ? FAULT + 4 + r()*6 : WARN + 4 + r()*5;
+        const mag = targetPeak - (d.base + 3);
+        if(mag <= 0) continue;
+        const sMs = dayMs + startHour*3600000, eMs = sMs + durH*3600000;
+        (wins[d.id] = wins[d.id]||[]).push({ startMs:sMs, endMs:eMs, mag });
+      }
+    }
+  }
+  return wins;
+}
+function tempAt(d, tMs, wins){
+  const r = mulberry32(hashStr(d.id+'|'+tMs));
+  const dt = new Date(tMs);
+  const hour = dt.getHours() + dt.getMinutes()/60;
+  const wave = Math.sin((hour-14)/24*Math.PI*2) * 3;
+  const noise = (r()*2-1)*1.5;
+  let bump = 0;
+  const dw = wins[d.id];
+  if(dw) for(const w of dw){ if(tMs>=w.startMs && tMs<=w.endMs){ const p=(tMs-w.startMs)/((w.endMs-w.startMs)||1); bump += w.mag*Math.sin(p*Math.PI); } }
+  return clamp(d.base + wave + noise + bump, 15, 115);
+}
+
+function generateReportData(startMs, endMs){
+  const spanDays = Math.max(0.04, (endMs-startMs)/DAYMS);
+  const step = pickStep(spanDays);
+  const ts=[], xLabels=[], power=[];
+  const temps={}; DEVICES.forEach(d=>temps[d.id]=[]);
+  const zones={}; ZONES.forEach(z=>zones[z.id]=[]);
+  const wins = buildWindows(startMs, endMs);
+  for(let t=startMs; t<=endMs && ts.length<140; t+=step){
+    ts.push(t); xLabels.push(fmtLabel(t, step, spanDays));
+    let loadSum=0;
+    DEVICES.forEach(d=>{
+      let temp;
+      if(step>=DAYMS){ // theo ngày → lấy đỉnh trong ngày (sub-sample 3 giờ/lần)
+        const dd=new Date(t); const dayStart=new Date(dd.getFullYear(),dd.getMonth(),dd.getDate()).getTime();
+        temp=-Infinity; for(let h=0;h<24;h+=3){ const v=tempAt(d, dayStart+h*3600000, wins); if(v>temp) temp=v; }
+        if(temp===-Infinity) temp=d.base;
+      } else { temp=tempAt(d, t, wins); }
+      temps[d.id].push(temp);
+      loadSum += clamp(45 + (temp-d.base)*2.2, 5, 100);
+    });
+    ZONES.forEach(z=>{ const ds=DEVICES.filter(d=>d.zone===z.id); const zt=ds.length?ds.reduce((s,d)=>s+temps[d.id][temps[d.id].length-1],0)/ds.length:AMBIENT; zones[z.id].push(zt); });
+    power.push(60 + loadSum*0.35);
+  }
+  const plantAvg = ts.map((_,i)=> DEVICES.reduce((s,d)=>s+temps[d.id][i],0)/DEVICES.length);
+  const events = detectWarnings(ts, temps, step);
+  // KPI
+  const allTemps = [].concat(...DEVICES.map(d=>temps[d.id]));
+  const avgTemp = allTemps.reduce((s,v)=>s+v,0)/allTemps.length;
+  let maxTemp=-Infinity, peakDev=DEVICES[0];
+  DEVICES.forEach(d=> temps[d.id].forEach((v,i)=>{ if(v>maxTemp){ maxTemp=v; peakDev=d; } }));
+  const faults = events.filter(e=>e.level==='fault').length;
+  const avgPow = power.reduce((s,v)=>s+v,0)/power.length;
+  let oeeAcc=0; for(let i=0;i<ts.length;i++){ let runN=0; DEVICES.forEach(d=>{ if(temps[d.id][i]<=WARN) runN++; }); oeeAcc += runN/DEVICES.length; }
+  const oee = ts.length ? (oeeAcc/ts.length)*100*0.92 : 0;
+  // per-device
+  const perDevice = DEVICES.map(d=>{
+    const arr=temps[d.id]; const avg=arr.reduce((s,v)=>s+v,0)/arr.length; const mx=Math.max(...arr);
+    const evs=events.filter(e=>e.device.id===d.id);
+    const wc=evs.filter(e=>e.level==='warn').length, fc=evs.filter(e=>e.level==='fault').length;
+    return { device:d, avg, max:mx, warnCount:wc, faultCount:fc, status: fc>0?'fault':(wc>0?'warning':'running') };
+  });
+  const pmin=Math.min(...power), pmax=Math.max(...power), ppad=Math.max(8,(pmax-pmin)*.2);
+  return { ts, xLabels, temps, zones, plantAvg, power, events, perDevice,
+           pmin:Math.floor(pmin-ppad), pmax:Math.ceil(pmax+ppad),
+           kpis:{ avgTemp, maxTemp, peakDev, totWarn:events.length, faults, avgPow, oee } };
+}
+
+function detectWarnings(ts, temps, step){
+  const events=[];
+  DEVICES.forEach(d=>{
+    const arr=temps[d.id]; let run=null;
+    for(let i=0;i<arr.length;i++){
+      const over = arr[i] > WARN;
+      if(over && !run) run={ device:d, startIdx:i, peak:arr[i], anyFault:arr[i]>FAULT };
+      else if(over){ if(arr[i]>run.peak) run.peak=arr[i]; if(arr[i]>FAULT) run.anyFault=true; }
+      else if(run){ events.push(finishRun(run, ts, step)); run=null; }
+    }
+    if(run) events.push(finishRun(run, ts, step));
+  });
+  events.sort((a,b)=> a.start-b.start);
+  return events;
+}
+function finishRun(run, ts, step){
+  return { device:run.device, zone:run.device.zone, start:ts[run.startIdx], end:ts[run.endIdx||run.startIdx],
+           peak:run.peak, level: run.anyFault?'fault':'warn', duration: (ts[run.endIdx||run.startIdx]-ts[run.startIdx]) + step };
+}
+
+/* ---- formatters ---- */
+const p2 = n=>String(n).padStart(2,'0');
+function fmtLabel(t, step, spanDays){ const d=new Date(t); if(step>=DAYMS) return p2(d.getDate())+'/'+p2(d.getMonth()+1); if(spanDays<=1.5) return p2(d.getHours())+':00'; return p2(d.getDate())+'/'+p2(d.getMonth()+1)+' '+p2(d.getHours())+':00'; }
+function fmtDateTime(t){ const d=new Date(t); return p2(d.getDate())+'/'+p2(d.getMonth()+1)+'/'+d.getFullYear()+' '+p2(d.getHours())+':'+p2(d.getMinutes()); }
+function fmtDate(t){ const d=new Date(t); return p2(d.getDate())+'/'+p2(d.getMonth()+1)+'/'+d.getFullYear(); }
+function fmtRange(a,b){ const sa=fmtDate(a), sb=fmtDate(b); return sa===sb?sa:(sa+' – '+sb); }
+function fmtTip(t){ const d=new Date(t); return p2(d.getHours())+':00 '+p2(d.getDate())+'/'+p2(d.getMonth()+1); }
+function fmtDuration(ms){ const m=Math.round(ms/60000); if(m<60) return m+(lang==='vi'?'p':'m'); return Math.floor(m/60)+'h '+(m%60)+(lang==='vi'?'p':'m'); }
+function toInputDate(dt){ return dt.getFullYear()+'-'+p2(dt.getMonth()+1)+'-'+p2(dt.getDate()); }
+function parseInputDate(s){ const p=s.split('-').map(Number); if(!p[0]) return null; return new Date(p[0], p[1]-1, p[2]); }
+
+/* ---- render ---- */
+function kpiTile(ico, val, sub, labelKey){ return '<div class="kpi glass"><div class="kpi-ico">'+ico+'</div><div class="kpi-num">'+val+(sub?'<small>'+sub+'</small>':'')+'</div><div class="kpi-label">'+LR(labelKey)+'</div></div>'; }
+function renderReportKPIs(data){
+  const k=data.kpis;
+  document.getElementById('rptKpi').innerHTML =
+    kpiTile('🌡', k.avgTemp.toFixed(0), '°C', 'avgTemp') +
+    kpiTile('🔥', k.maxTemp.toFixed(0), '°C · '+Lname(k.peakDev), 'maxTemp') +
+    kpiTile('⚠', k.totWarn, '', 'totWarn') +
+    kpiTile('⛔', k.faults, '', 'faults') +
+    kpiTile('⚡', Math.round(k.avgPow), 'kW', 'avgPow') +
+    kpiTile('📈', k.oee.toFixed(0), '%', 'oee');
+}
+function renderReportLegend(){
+  const wrap=document.getElementById('rptLegend'); wrap.innerHTML='';
+  ZONES.forEach(z=>{ const c=document.createElement('span'); c.className='lg-chip'; c.innerHTML='<span class="lg-dot" style="background:'+z.color+'"></span>'+(lang==='vi'?z.vi:z.en); wrap.appendChild(c); });
+  const c=document.createElement('span'); c.className='lg-chip'; c.innerHTML='<span class="lg-dot" style="background:'+COLORS.neon+'"></span>'+LR('plantAvg'); wrap.appendChild(c);
+}
+function renderWarnTable(data){
+  const tbl=document.getElementById('rptWarnTable');
+  if(!data.events.length){ tbl.innerHTML='<tbody><tr><td class="rpt-empty">'+LR('noWarn')+'</td></tr></tbody>'; return; }
+  let h='<thead><tr><th>'+LR('thDevice')+'</th><th>'+LR('thZone')+'</th><th>'+LR('thTime')+'</th><th class="num">'+LR('thPeak')+'</th><th>'+LR('thLevel')+'</th><th class="num">'+LR('thDur')+'</th></tr></thead><tbody>';
+  data.events.forEach(e=>{ h+='<tr class="rpt-warn-row '+(e.level==='fault'?'fault':'')+'"><td>'+e.device.id+'</td><td>'+e.zone+'</td><td>'+fmtDateTime(e.start)+'</td><td class="num">'+e.peak.toFixed(0)+'</td><td><span class="rpt-tag '+e.level+'">'+LR(e.level==='fault'?'lvlFault':'lvlWarn')+'</span></td><td class="num">'+fmtDuration(e.duration)+'</td></tr>'; });
+  tbl.innerHTML=h+'</tbody>';
+}
+function renderDeviceTable(data){
+  const tbl=document.getElementById('rptDevTable');
+  let h='<thead><tr><th>'+LR('thDevice')+'</th><th>'+LR('thZone')+'</th><th class="num">'+LR('thAvg')+'</th><th class="num">'+LR('thMax')+'</th><th class="num">'+LR('thWarn')+'</th><th class="num">'+LR('thFault')+'</th><th>'+LR('thStatus')+'</th></tr></thead><tbody>';
+  data.perDevice.forEach(p=>{ h+='<tr><td>'+p.device.id+' <small style="color:var(--text-muted)">'+Lname(p.device)+'</small></td><td>'+p.device.zone+'</td><td class="num">'+p.avg.toFixed(0)+'</td><td class="num">'+p.max.toFixed(0)+'</td><td class="num">'+p.warnCount+'</td><td class="num">'+p.faultCount+'</td><td><span class="pill" data-status="'+p.status+'"><span>'+Lstatus(p.status)+'</span></span></td></tr>'; });
+  tbl.innerHTML=h+'</tbody>';
+}
+function renderReportHeader(data){
+  document.getElementById('rptPeriod').textContent = fmtRange(reportCache.start, reportCache.end);
+  document.getElementById('rptGenAt').textContent = fmtDateTime(new Date());
+}
+function renderReport(){
+  const data=reportCache.data; if(!data) return;
+  const grid = printMode ? 'rgba(0,0,0,.12)' : undefined;
+  const axis = printMode ? '#5b6577' : undefined;
+  const rT=document.getElementById('rptTemp'), rP=document.getElementById('rptPower');
+  const zSeries = ZONES.map(z=>({ color:z.color, data:data.zones[z.id], name: lang==='vi'?z.vi:z.en }));
+  zSeries.push({ color:COLORS.neon, data:data.plantAvg, name: LR('plantAvg') });
+  rT._redraw = ()=> drawLine(rT, zSeries, { min:20, max:100, points:data.ts.length, unit:'°C', fill:false, gridColor:grid, axisColor:axis, xLabels:data.xLabels, tipTime:i=>fmtTip(data.ts[i]), tipTitle: lang==='vi'?'Nhiệt độ':'Temperature' });
+  rP._redraw = ()=> drawLine(rP, [{ color:COLORS.accent2, data:data.power, name: lang==='vi'?'Công suất':'Power' }], { min:data.pmin, max:data.pmax, points:data.ts.length, unit:'kW', fill:true, fmt:v=>Math.round(v), gridColor:grid, axisColor:axis, xLabels:data.xLabels, tipTime:i=>fmtTip(data.ts[i]), tipTitle: lang==='vi'?'Công suất':'Power' });
+  rT._redraw(); rP._redraw();
+  renderReportLegend(); renderReportKPIs(data); renderWarnTable(data); renderDeviceTable(data); renderReportHeader(data);
+  document.getElementById('rptClose').setAttribute('aria-label', LR('close'));
+}
+
+/* ---- range / open / close ---- */
+function setReportPreset(preset){
+  const now=new Date(); const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  let start, end;
+  if(preset==='today'){ start=today; end=now; }
+  else if(preset==='yesterday'){ start=new Date(today); start.setDate(start.getDate()-1); end=new Date(today); end.setMilliseconds(-1); }
+  else if(preset==='7'){ start=new Date(today); start.setDate(start.getDate()-6); end=now; }
+  else if(preset==='30'){ start=new Date(today); start.setDate(start.getDate()-29); end=now; }
+  else return;
+  document.getElementById('rptFrom').value=toInputDate(start); document.getElementById('rptTo').value=toInputDate(end);
+  document.querySelectorAll('.rpt-preset').forEach(b=> b.classList.toggle('active', b.dataset.preset===String(preset)));
+  reportCache.preset=preset; reportCache.start=start; reportCache.end=end;
+  reportCache.data=generateReportData(start.getTime(), end.getTime());
+  renderReport();
+}
+function applyCustomRange(){
+  const fs=document.getElementById('rptFrom').value, ts=document.getElementById('rptTo').value;
+  if(!fs||!ts){ showToast(LR('invalidRange')); return; }
+  const start=parseInputDate(fs), end=parseInputDate(ts);
+  if(!start||!end|| end<start){ showToast(LR('invalidRange')); return; }
+  end.setHours(23,59,59,999);
+  document.querySelectorAll('.rpt-preset').forEach(b=> b.classList.remove('active'));
+  reportCache.preset='custom'; reportCache.start=start; reportCache.end=end;
+  reportCache.data=generateReportData(start.getTime(), end.getTime());
+  renderReport();
+}
+function openReport(){
+  reportOverlay.showModal();
+  document.body.classList.add('report-open');
+  reportOverlay.appendChild(TIP);     // tip/toast phải nằm trong dialog (top-layer) mới thấy được
+  reportOverlay.appendChild(toastEl);
+  if(!reportCache.data) setReportPreset('today'); else renderReport();
+}
+reportOverlay.addEventListener('close', ()=>{
+  document.body.classList.remove('report-open');
+  document.body.appendChild(TIP); document.body.appendChild(toastEl);
+  const b=document.getElementById('reportBtn'); if(b) b.focus();
+});
+
+/* ---- export CSV ---- */
+function escCell(v){ const s=String(v); return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; }
+function download(filename, content, type){
+  const a=document.createElement('a');
+  const blob = content instanceof Blob ? content : new Blob([content], { type: type||'text/plain' });
+  a.href=URL.createObjectURL(blob); a.download=filename; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 3000);
+}
+/* CSV đầy đủ = FORM (tiêu đề + kỳ + KPI + ngưỡng + 2 bảng) + CHART (dữ liệu trend nhiệt & công suất).
+   Mỗi section cách 1 dòng trắng → mở trong Excel trông như báo cáo trên màn hình. */
+function buildReportCSV(){
+  const d=reportCache.data, k=d.kpis, rows=[];
+  // --- form: header ---
+  rows.push([LR('csvTitle')]);
+  rows.push([LR('periodLbl'), fmtRange(reportCache.start, reportCache.end)]);
+  rows.push([LR('genLbl'), fmtDateTime(new Date())]);
+  rows.push([LR('warnTh'), WARN]);
+  rows.push([LR('faultTh'), FAULT]);
+  rows.push([]);
+  // --- form: KPI summary ---
+  rows.push([LR('secSummary')]);
+  rows.push([LR('metric'), LR('value')]);
+  rows.push([LR('avgTemp'), k.avgTemp.toFixed(0)+' °C']);
+  rows.push([LR('maxTemp'), k.maxTemp.toFixed(0)+' °C ('+Lname(k.peakDev)+')']);
+  rows.push([LR('totWarn'), k.totWarn]);
+  rows.push([LR('faults'), k.faults]);
+  rows.push([LR('avgPow'), Math.round(k.avgPow)+' kW']);
+  rows.push([LR('oee'), k.oee.toFixed(0)+' %']);
+  rows.push([]);
+  // --- chart: temperature trend (theo khu vực + TB nhà máy) ---
+  rows.push([LR('secTempTrend')]);
+  rows.push([LR('colTime')].concat(ZONES.map(z=> lang==='vi'?z.vi:z.en)).concat([LR('plantAvg')]));
+  d.ts.forEach((t,i)=>{ const c=[fmtDateTime(t)]; ZONES.forEach(z=>c.push(d.zones[z.id][i].toFixed(1))); c.push(d.plantAvg[i].toFixed(1)); rows.push(c); });
+  rows.push([]);
+  // --- chart: power trend ---
+  rows.push([LR('secPowerTrend')]);
+  rows.push([LR('colTime'), LR('colPower')]);
+  d.ts.forEach((t,i)=> rows.push([fmtDateTime(t), d.power[i].toFixed(1)]) );
+  rows.push([]);
+  // --- form: warnings table ---
+  rows.push([LR('secWarn')]);
+  rows.push([LR('thDevice'), LR('thZone'), LR('thTime'), LR('thPeak'), LR('thLevel'), LR('thDur')]);
+  if(!d.events.length) rows.push([LR('noWarn')]);
+  else d.events.forEach(e=> rows.push([e.device.id+' '+Lname(e.device), e.zone, fmtDateTime(e.start), e.peak.toFixed(0), LR(e.level==='fault'?'lvlFault':'lvlWarn'), fmtDuration(e.duration)]) );
+  rows.push([]);
+  // --- form: per-device table ---
+  rows.push([LR('secDev')]);
+  rows.push([LR('thDevice'), LR('thZone'), LR('thAvg'), LR('thMax'), LR('thWarn'), LR('thFault'), LR('thStatus')]);
+  d.perDevice.forEach(p=> rows.push([p.device.id+' '+Lname(p.device), p.device.zone, p.avg.toFixed(0), p.max.toFixed(0), p.warnCount, p.faultCount, Lstatus(p.status)]) );
+  return '﻿' + rows.map(r=>r.map(escCell).join(',')).join('\r\n');
+}
+function exportCSV(){
+  if(!reportCache.data) return;
+  const csv=buildReportCSV();
+  download('bao-cao_TEA_'+toInputDate(reportCache.start)+'_'+toInputDate(reportCache.end)+'.csv', csv, 'text/csv;charset=utf-8;');
+  showToast(LR('csvDone'));
+}
+
+/* ---- print / PDF (canvas là bitmap → phải redraw với màu sáng trước khi in) ---- */
+function printReport(){ showToast(LR('printStart')); printMode=true; renderReport(); setTimeout(()=>window.print(), 80); }
+window.addEventListener('beforeprint', ()=>{ if(reportOverlay.open && !printMode){ printMode=true; renderReport(); } });
+window.addEventListener('afterprint', ()=>{ if(reportOverlay.open){ printMode=false; renderReport(); } });
+
+/* ---- toast ---- */
+let toastTimer;
+function showToast(msg){ toastEl.textContent=msg; toastEl.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>toastEl.classList.remove('show'), 3200); }
+
+function initReport(){
+  setupHover(document.getElementById('rptTemp'));
+  setupHover(document.getElementById('rptPower'));
+  const ti=toInputDate(new Date());
+  document.getElementById('rptFrom').value=ti; document.getElementById('rptTo').value=ti;
+  document.getElementById('rptTo').max=ti; // không cho chọn tương lai
+  document.getElementById('reportBtn').addEventListener('click', openReport);
+  document.getElementById('rptClose').addEventListener('click', ()=> reportOverlay.close());
+  reportOverlay.addEventListener('click', e=>{ if(e.target===reportOverlay) reportOverlay.close(); });
+  document.querySelectorAll('.rpt-preset').forEach(b=> b.addEventListener('click', ()=> setReportPreset(b.dataset.preset)) );
+  document.getElementById('rptGen').addEventListener('click', applyCustomRange);
+  document.getElementById('rptCsv').addEventListener('click', exportCSV);
+  document.getElementById('rptPrint').addEventListener('click', printReport);
+}
 buildDeviceGrid();
 renderLegend();
 seeding = true;
@@ -369,6 +690,8 @@ alertsDirty = true;
 
 setupHover(document.getElementById('chartTemp'));
 setupHover(document.getElementById('chartPower'));
+
+initReport();
 
 setLang(lang);          // applies language + renders dynamic + drawAll
 updatePauseLabel();

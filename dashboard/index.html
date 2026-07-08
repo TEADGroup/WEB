@@ -56,6 +56,7 @@
       <div class="top-spacer" style="margin:0;"></div>
       <button class="btn btn-primary btn-sm" id="startAll" data-vi="▶ Khởi động tất cả" data-en="▶ Start all">▶ Khởi động tất cả</button>
       <button class="btn btn-ghost btn-sm" id="stopAll" data-vi="⏹ Dừng tất cả" data-en="⏹ Stop all">⏹ Dừng tất cả</button>
+      <button class="btn btn-ghost btn-sm" id="reportBtn" data-vi="📄 Báo cáo" data-en="📄 Report">📄 Báo cáo</button>
     </section>
 
     <!-- KPI -->
@@ -148,6 +149,78 @@
       <small data-vi="© 2026 TEA · Dữ liệu được mô phỏng để minh hoạ." data-en="© 2026 TEA · Simulated data for demonstration.">© 2026 TEA · Dữ liệu được mô phỏng để minh hoạ.</small>
     </div>
   </footer>
+
+  <!-- ===================== REPORT OVERLAY ===================== -->
+  <dialog id="reportOverlay" class="rpt-overlay" aria-labelledby="reportTitle">
+    <div class="rpt-card">
+      <!-- Toolbar (ẩn khi in) -->
+      <div class="rpt-toolbar no-print">
+        <div class="rpt-presets">
+          <button class="btn btn-ghost btn-sm rpt-preset active" data-preset="today" data-vi="Hôm nay" data-en="Today">Hôm nay</button>
+          <button class="btn btn-ghost btn-sm rpt-preset" data-preset="yesterday" data-vi="Hôm qua" data-en="Yesterday">Hôm qua</button>
+          <button class="btn btn-ghost btn-sm rpt-preset" data-preset="7" data-vi="7 ngày" data-en="7 days">7 ngày</button>
+          <button class="btn btn-ghost btn-sm rpt-preset" data-preset="30" data-vi="30 ngày" data-en="30 days">30 ngày</button>
+        </div>
+        <div class="rpt-range">
+          <label data-vi="Từ ngày" data-en="From">Từ ngày</label>
+          <input type="date" id="rptFrom" />
+          <label data-vi="Đến ngày" data-en="To">Đến ngày</label>
+          <input type="date" id="rptTo" />
+          <button class="btn btn-primary btn-sm" id="rptGen" data-vi="Tạo báo cáo" data-en="Generate">Tạo báo cáo</button>
+        </div>
+        <div class="rpt-actions">
+          <button class="btn btn-ghost btn-sm" id="rptPrint" data-vi="🖨 In / PDF" data-en="🖨 Print / PDF">🖨 In / PDF</button>
+          <button class="btn btn-ghost btn-sm" id="rptCsv" data-vi="⬇ Tải CSV" data-en="⬇ Download CSV">⬇ Tải CSV</button>
+          <button class="icon-btn rpt-close" id="rptClose" aria-label="Đóng">×</button>
+        </div>
+      </div>
+
+      <!-- Report body -->
+      <div class="rpt-body" id="rptBody">
+        <div class="rpt-head">
+          <div>
+            <span class="eyebrow" data-vi="Báo cáo giám sát" data-en="Monitoring report">Báo cáo giám sát</span>
+            <h2 id="reportTitle" data-vi="Báo cáo nhiệt độ nhà máy" data-en="Plant temperature report">Báo cáo nhiệt độ nhà máy</h2>
+          </div>
+          <div class="rpt-meta">
+            <div><span class="rpt-meta-k" data-vi="Kỳ báo cáo" data-en="Period">Kỳ báo cáo</span><span class="rpt-meta-v" id="rptPeriod">—</span></div>
+            <div><span class="rpt-meta-k" data-vi="Sinh lúc" data-en="Generated">Sinh lúc</span><span class="rpt-meta-v" id="rptGenAt">—</span></div>
+          </div>
+        </div>
+
+        <div class="kpi-row" id="rptKpi"></div>
+
+        <div class="rpt-sec">
+          <h3 data-vi="Xu hướng nhiệt độ" data-en="Temperature trend">Xu hướng nhiệt độ</h3>
+          <div class="legend" id="rptLegend"></div>
+          <canvas class="chart rpt-canvas" id="rptTemp"></canvas>
+        </div>
+
+        <div class="rpt-sec">
+          <h3 data-vi="Xu hướng công suất" data-en="Power trend">Xu hướng công suất</h3>
+          <canvas class="chart rpt-canvas" id="rptPower"></canvas>
+        </div>
+
+        <div class="rpt-sec">
+          <h3 data-vi="Cảnh báo nhiệt độ" data-en="Temperature warnings">Cảnh báo nhiệt độ</h3>
+          <div class="rpt-table-scroll">
+            <table class="rpt-table" id="rptWarnTable"></table>
+          </div>
+        </div>
+
+        <div class="rpt-sec">
+          <h3 data-vi="Tóm tắt theo thiết bị" data-en="Per-device summary">Tóm tắt theo thiết bị</h3>
+          <div class="rpt-table-scroll">
+            <table class="rpt-table" id="rptDevTable"></table>
+          </div>
+        </div>
+
+        <p class="rpt-note" data-vi="* Dữ liệu được mô phỏng để minh hoạ. Ngưỡng cảnh báo / sự cố lấy theo thiết lập hiện tại ở thanh điều khiển." data-en="* Simulated data for demonstration. Warning / fault thresholds use the current control-bar settings.">* Dữ liệu được mô phỏng để minh hoạ. Ngưỡng cảnh báo / sự cố lấy theo thiết lập hiện tại ở thanh điều khiển.</p>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast"></div>
 
   <!-- Scripts: theme + i18n (chung) → dashboard (riêng). Thư mục con → ../ -->
   <script src="../assets/js/theme.js"></script>

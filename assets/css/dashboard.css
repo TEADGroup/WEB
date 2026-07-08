@@ -194,4 +194,73 @@ footer small { color:var(--text-muted); }
 @media (prefers-reduced-motion: reduce){
   .orb, .live-dot, .pill[data-status=fault]{ animation:none!important; }
   .dash.load-1,.dash.load-2{ animation:none!important; }
+  .rpt-card{ animation:none!important; }
+}
+
+/* ===================== REPORT OVERLAY ===================== */
+dialog#reportOverlay{ background:transparent; border:0; padding:0; border-radius:var(--radius); width:min(96vw,1080px); max-width:1080px; max-height:92vh; color:var(--text); }
+dialog#reportOverlay::backdrop{ background:rgba(5,6,15,.6); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); }
+.rpt-card{ background:var(--bg-2); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); display:flex; flex-direction:column; max-height:92vh; overflow:hidden; animation:rptIn .35s ease both; }
+@keyframes rptIn{ from{opacity:0; transform:translateY(18px) scale(.98);} to{opacity:1; transform:none;} }
+.rpt-toolbar{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding:14px 18px; border-bottom:1px solid var(--border); background:var(--surface); }
+.rpt-presets,.rpt-range,.rpt-actions{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.rpt-actions{ margin-left:auto; }
+.rpt-range label{ font-size:.78rem; font-weight:600; color:var(--text-muted); }
+.rpt-range input[type=date]{ padding:7px 9px; border-radius:9px; background:var(--bg-2); border:1px solid var(--border); color:var(--text); font-family:inherit; font-size:16px; font-weight:600; color-scheme:dark; }
+[data-theme="light"] .rpt-range input[type=date]{ color-scheme:light; }
+.rpt-range input[type=date]:focus{ outline:none; border-color:var(--accent); }
+.rpt-close{ font-size:1.35rem; line-height:1; }
+
+.rpt-body{ padding:20px 22px 24px; overflow:auto; }
+.rpt-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:16px; }
+.rpt-head h2{ font-size:1.3rem; margin-top:2px; }
+.rpt-meta{ display:flex; gap:20px; text-align:right; }
+.rpt-meta-k{ display:block; font-size:.66rem; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:var(--text-muted); }
+.rpt-meta-v{ font-family:'Space Grotesk'; font-weight:600; font-size:.92rem; }
+.rpt-body .kpi-row{ margin-bottom:18px; }
+
+.rpt-sec{ margin-bottom:22px; }
+.rpt-sec h3{ font-size:1rem; margin-bottom:10px; }
+.rpt-canvas{ height:220px; }
+#rptLegend{ margin-bottom:8px; }
+
+.rpt-table-scroll{ overflow:auto; -webkit-overflow-scrolling:touch; max-height:320px; border:1px solid var(--border); border-radius:10px; }
+.rpt-table{ width:100%; border-collapse:collapse; font-size:.82rem; }
+.rpt-table th,.rpt-table td{ padding:8px 11px; text-align:left; border-bottom:1px solid var(--border); white-space:nowrap; }
+.rpt-table thead th{ position:sticky; top:0; z-index:1; font-size:.7rem; font-weight:700; letter-spacing:.4px; text-transform:uppercase; color:var(--text-muted); background:var(--bg-2); }
+.rpt-table tbody tr:hover{ background:var(--surface); }
+.rpt-table td.num{ text-align:right; font-family:'Space Grotesk'; font-weight:600; }
+.rpt-warn-row td:first-child{ border-left:3px solid var(--c-amber); }
+.rpt-warn-row.fault td:first-child{ border-left-color:var(--c-red); }
+.rpt-tag{ display:inline-flex; padding:2px 9px; border-radius:999px; font-size:.7rem; font-weight:700; font-family:'Space Grotesk'; }
+.rpt-tag.warn{ color:var(--c-amber); background:rgba(245,158,11,.14); }
+.rpt-tag.fault{ color:var(--c-red); background:rgba(239,68,68,.14); }
+.rpt-empty{ color:var(--text-muted); font-size:.84rem; padding:10px 4px; }
+.rpt-note{ font-size:.74rem; color:var(--text-muted); margin-top:4px; font-style:italic; }
+
+/* Toast (dashboard không tải main.css nên phải định nghĩa riêng) */
+.toast{ position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--grad); color:#fff; padding:13px 24px; border-radius:999px; font-weight:600; font-size:.9rem; box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:opacity .3s ease, transform .3s ease; z-index:9999; }
+.toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* report mobile */
+@media (max-width:560px){
+  .rpt-head{ flex-direction:column; }
+  .rpt-meta{ text-align:left; gap:14px; }
+  .rpt-actions{ margin-left:0; width:100%; }
+  .rpt-canvas{ height:180px; }
+}
+
+/* print: chỉ hiện báo cáo, ép theme sáng; chart được redraw qua beforeprint */
+@media print{
+  body > *:not(#reportOverlay){ display:none !important; }
+  dialog#reportOverlay, dialog#reportOverlay::backdrop{ background:#fff !important; }
+  dialog#reportOverlay{ position:absolute !important; inset:0 !important; width:100% !important; max-width:100% !important; max-height:none !important; border:0 !important; display:block !important; }
+  .rpt-card, .rpt-body{ overflow:visible !important; max-height:none !important; position:static !important; }
+  #reportOverlay, #reportOverlay *{ color:#111 !important; border-color:#ccc !important; }
+  .no-print{ display:none !important; }
+  .rpt-card{ box-shadow:none !important; border:0 !important; animation:none !important; }
+  canvas{ page-break-inside:avoid; }
+  .rpt-table thead th{ background:#f2f2f2 !important; color:#333 !important; }
+  .rpt-tag.warn{ color:#b45309 !important; background:#fef3c7 !important; }
+  .rpt-tag.fault{ color:#b91c1c !important; background:#fee2e2 !important; }
 }
