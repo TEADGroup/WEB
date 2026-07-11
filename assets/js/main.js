@@ -199,12 +199,12 @@ form.addEventListener('submit', function (ev) {
   var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   if (!name || !email || !msg) {
     formMsg.style.color = '#fb7185';
-    formMsg.textContent = currentLang === 'vi' ? '⚠ Vui lòng điền đầy đủ thông tin.' : '⚠ Please fill in all fields.';
+    formMsg.textContent = currentLang === 'vi' ? 'Vui lòng điền đầy đủ thông tin.' : 'Please fill in all fields.';
     return;
   }
   if (!emailOk) {
     formMsg.style.color = '#fb7185';
-    formMsg.textContent = currentLang === 'vi' ? '⚠ Email không hợp lệ.' : '⚠ Invalid email address.';
+    formMsg.textContent = currentLang === 'vi' ? 'Email không hợp lệ.' : 'Invalid email address.';
     return;
   }
   formMsg.style.color = '';

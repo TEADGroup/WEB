@@ -1,0 +1,84 @@
+/* =====================================================================
+   auth.css — RIÊNG trang login.html + profile.html
+   ---------------------------------------------------------------------
+   Nạp SAU base.css. Dùng lại token (--bg, --text, --accent, --surface,
+   --border, --grad, --radius, --space-*). Style: glass card, tabs,
+   fields, avatar ring — theo design-system/tea-automation/MASTER.md.
+   ===================================================================== */
+
+/* cluster nút lang/theme góc trên phải */
+.auth-tools { position: fixed; top: 18px; right: 18px; display: flex; gap: 8px; z-index: 10; }
+
+.auth-wrap { min-height: 100vh; display: grid; place-items: center; padding: var(--space-lg) var(--space-md); }
+.auth-card { width: 100%; max-width: 400px; padding: var(--space-xl) var(--space-lg); position: relative; }
+
+/* tabs */
+.auth-tabs { display: flex; gap: 4px; margin-bottom: var(--space-lg); background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 4px; }
+.auth-tab { flex: 1; padding: 10px 14px; border-radius: 999px; font-weight: 600; font-size: 0.9rem; cursor: pointer; color: var(--text-muted); background: transparent; border: 0; font-family: inherit; transition: background 0.2s ease, color 0.2s ease; }
+.auth-tab.active { background: var(--grad); color: #fff; }
+
+.auth-title { font-size: 1.4rem; margin-bottom: 6px; }
+.auth-sub { color: var(--text-muted); font-size: 0.88rem; margin-bottom: var(--space-lg); }
+
+/* fields */
+.auth-field { margin-bottom: var(--space-md); position: relative; }
+.auth-field label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 6px; }
+.auth-field input {
+  width: 100%; padding: 12px 14px; border-radius: 10px;
+  background: var(--bg-2); border: 1px solid var(--border); color: var(--text);
+  font-family: inherit; font-size: 16px;          /* ≥16px: iOS không tự zoom */
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.auth-field input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+.auth-field.has-toggle input { padding-right: 46px; }
+.auth-toggle {
+  position: absolute; right: 6px; bottom: 6px; width: 32px; height: 32px; border-radius: 8px;
+  display: grid; place-items: center; cursor: pointer; color: var(--text-muted);
+  background: transparent; border: 0; transition: color 0.2s ease, background 0.2s ease;
+}
+.auth-toggle:hover { color: var(--text); background: var(--surface-strong); }
+
+.auth-err { color: var(--status-fault); font-size: 0.84rem; min-height: 1.1em; margin-bottom: var(--space-sm); }
+.auth-ok { color: var(--status-ok); font-size: 0.84rem; min-height: 1.1em; margin-bottom: var(--space-sm); }
+.auth-config-warn {
+  background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5; padding: 12px 14px; border-radius: 10px; font-size: 0.84rem; margin-bottom: var(--space-md);
+}
+
+.auth-btn { width: 100%; justify-content: center; }
+.auth-foot { margin-top: var(--space-lg); text-align: center; font-size: 0.84rem; color: var(--text-muted); }
+.auth-foot button { color: var(--accent); font-weight: 600; cursor: pointer; background: none; border: 0; font-family: inherit; font-size: inherit; }
+.auth-foot button:hover { text-decoration: underline; }
+
+/* ===================== PROFILE ===================== */
+.profile-card { width: 100%; max-width: 460px; padding: var(--space-xl) var(--space-lg); }
+.profile-back { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 0.85rem; margin-bottom: var(--space-lg); cursor: pointer; }
+.profile-back:hover { color: var(--text); }
+
+.avatar-ring { width: 96px; height: 96px; border-radius: 50%; padding: 3px; background: var(--grad); margin: 0 auto var(--space-md); position: relative; }
+.avatar-ring img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: var(--bg-2); border: 2px solid var(--bg); display: block; }
+.avatar-pick { position: absolute; right: -2px; bottom: -2px; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--bg); border: 1px solid var(--border); color: var(--text); cursor: pointer; transition: background 0.2s ease, transform 0.2s ease; }
+.avatar-pick:hover { background: var(--surface-strong); transform: scale(1.06); }
+.avatar-pick input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+.profile-email { text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-bottom: var(--space-lg); word-break: break-all; }
+
+.profile-row { margin-bottom: var(--space-md); }
+.profile-row label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
+.profile-row input { width: 100%; padding: 11px 14px; border-radius: 10px; background: var(--bg-2); border: 1px solid var(--border); color: var(--text); font-family: inherit; font-size: 16px; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+.profile-row input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+
+.profile-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: var(--space-lg); }
+.profile-actions .btn { flex: 1; justify-content: center; min-width: 130px; }
+.btn-danger { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.35); }
+
+.profile-divider { height: 1px; background: var(--border); margin: var(--space-lg) 0; }
+
+/* toast (login/profile không tải dashboard.css nên tự định nghĩa) */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--grad); color: #fff; padding: 12px 22px; border-radius: 999px; font-weight: 600; font-size: 0.86rem; box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease; z-index: 9999; max-width: 90vw; text-align: center; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 420px) {
+  .auth-card, .profile-card { padding: var(--space-lg) var(--space-md); }
+  .auth-tools { top: 12px; right: 12px; }
+}

@@ -1,0 +1,18 @@
+# Dependencies — site dùng CDN UMD (không dùng npm build)
+# (package.json/package-lock là artifact khi explore SDK local, không cần cho site tĩnh)
+node_modules/
+package.json
+package-lock.json
+
+# Scratch / temp (CLAUDE.md: _*.js / _c.js là file cào để node --check)
+_*.js
+_c.js
+_qa/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -5,8 +5,38 @@
    cảnh báo. Phần theme/i18n gọi TEA.* từ theme.js / i18n.js (nạp trước).
    ===================================================================== */
 "use strict";
+
+/* ===== AUTH GATE (Supabase) =====
+   Dashboard bắt buộc đăng nhập. <main class="auth-pending"> ẩn nội dung cho đến
+   khi auth xác nhận → tránh flash dữ liệu bảo vệ. IIFE bất đồng bộ, không block
+   phần còn lại của script (chạy song song; nếu không session thì redirect đi). */
+(async function () {
+  try {
+    var s = await TEA.Auth.requireAuth('dashboard', '../login.html');
+    if (!s) return;                       /* đang redirect → giữ main ẩn */
+    await TEA.Auth.renderUserChip({
+      imgEl: document.getElementById('userAvatar'),
+      nameEl: document.getElementById('userName')
+    });
+    var m = document.querySelector('main.auth-pending');
+    if (m) m.classList.remove('auth-pending');
+  } catch (e) { console.warn('[auth] gate error', e); }
+})();
+var signoutBtn = document.getElementById('signoutBtn');
+if (signoutBtn) signoutBtn.addEventListener('click', function () { TEA.Auth.signOut('../login.html'); });
+
 /* ===== palette / status ===== */
-const COLORS = { accent:'#7c3aed', accent2:'#2563eb', neon:'#22d3ee', amber:'#f59e0b', green:'#22c55e', red:'#ef4444', gray:'#94a3b8' };
+const COLORS = { accent:'#2563eb', accent2:'#8b5cf6', neon:'#22d3ee', amber:'#f59e0b', green:'#22c55e', red:'#ef4444', gray:'#94a3b8' };
+/* icon SVG (theme toggle — thay emoji) */
+const ICON_MOON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+const ICON_SUN = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+/* icon SVG cho KPI report (thay emoji) */
+const ICO_THERMO = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>';
+const ICO_FLAME = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>';
+const ICO_WARN = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+const ICO_BAN = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+const ICO_ZAP = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>';
+const ICO_TREND = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>';
 const STATUS = {
   running:{ vi:'Đang chạy', en:'Running' },
   idle:   { vi:'Chờ',       en:'Idle'    },
@@ -48,8 +78,8 @@ const hiddenZones = new Set();
 /* ===== i18n ===== */
 let lang = TEA.getLang();
 const I = {
-  vi:{ live:'TRỰC TUYẾN', paused:'TẠM DỪNG', pause:'⏸ Tạm dừng', resume:'▶ Tiếp tục', ack:'Xác nhận', noAlerts:'Chưa có sự kiện nào.' },
-  en:{ live:'LIVE',       paused:'PAUSED',    pause:'⏸ Pause',     resume:'▶ Resume',   ack:'Acknowledge', noAlerts:'No events yet.' }
+  vi:{ live:'TRỰC TUYẾN', paused:'TẠM DỪNG', pause:'Tạm dừng', resume:'Tiếp tục', ack:'Xác nhận', noAlerts:'Chưa có sự kiện nào.' },
+  en:{ live:'LIVE',       paused:'PAUSED',    pause:'Pause',     resume:'Resume',   ack:'Acknowledge', noAlerts:'No events yet.' }
 };
 const L = k => I[lang][k];
 const Lname = d => lang==='vi' ? d.vi : d.en;
@@ -70,9 +100,13 @@ function setLang(l){
 
 /* ===== theme (dùng TEA.initTheme chung) ===== */
 const themeBtn = document.getElementById('themeBtn');
-TEA.initTheme({ btn: themeBtn, onTheme: t => { themeBtn.textContent = t==='dark' ? '🌙' : '☀️'; } });
-// đổi theme → vẽ lại chart theo màu mới (drawAll định nghĩa sau; chỉ chạy khi click)
-themeBtn.addEventListener('click', () => { if (typeof drawAll === 'function') drawAll(); if (reportOverlay && reportOverlay.open) renderReport(); });
+// onTheme chạy cả khi TỰ CHUYỂN (theo giờ) lẫn bấm nút → vẽ lại chart + report theo màu mới
+TEA.initTheme({ btn: themeBtn, onTheme: t => {
+  themeBtn.innerHTML = t==='dark' ? ICON_MOON : ICON_SUN;
+  if (typeof drawAll === 'function') drawAll();
+  const ov = document.getElementById('reportOverlay');        // dùng getElementById (tránh TDZ với const reportOverlay)
+  if (ov && ov.open && typeof renderReport === 'function') renderReport();
+}});
 
 /* ===== canvas helpers ===== */
 function cssVar(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
@@ -249,9 +283,9 @@ function pushAlert(d, prev){
   if(seeding) return;
   const name = Lname(d);
   let vi, en, level;
-  if(d.status==='fault'){ vi='⛔ '+name+' — sự cố, dừng khẩn cấp ('+Math.round(d.temp)+'°C)'; en='⛔ '+name+' — fault, emergency stop ('+Math.round(d.temp)+'°C)'; level='fault'; }
-  else if(d.status==='warning'){ vi='⚠ '+name+' — vượt ngưỡng nhiệt ('+Math.round(d.temp)+'°C)'; en='⚠ '+name+' — over temperature ('+Math.round(d.temp)+'°C)'; level='warn'; }
-  else if(d.status==='running' && prev!=='running' && prev!=='off'){ vi='✓ '+name+' — đã phục hồi'; en='✓ '+name+' — recovered'; level='ok'; }
+  if(d.status==='fault'){ vi=name+' — sự cố, dừng khẩn cấp ('+Math.round(d.temp)+'°C)'; en=name+' — fault, emergency stop ('+Math.round(d.temp)+'°C)'; level='fault'; }
+  else if(d.status==='warning'){ vi=name+' — vượt ngưỡng nhiệt ('+Math.round(d.temp)+'°C)'; en=name+' — over temperature ('+Math.round(d.temp)+'°C)'; level='warn'; }
+  else if(d.status==='running' && prev!=='running' && prev!=='off'){ vi=name+' — đã phục hồi'; en=name+' — recovered'; level='ok'; }
   else return;
   alerts.unshift({ t:new Date(), vi, en, level, ack:false });
   if(alerts.length>40) alerts.pop();
@@ -323,9 +357,9 @@ function updateKPIs(){
 /* ===== clock / pause ===== */
 const clockEl = document.getElementById('clock');
 function updateClock(now){ const p=n=>String(n).padStart(2,'0'); clockEl.textContent = p(now.getHours())+':'+p(now.getMinutes())+':'+p(now.getSeconds()); }
-const pauseBtn = document.getElementById('pauseBtn'), liveWrap = document.getElementById('liveWrap'), liveText = document.getElementById('liveText');
+const pauseBtn = document.getElementById('pauseBtn'), pauseLbl = document.getElementById('pauseLbl'), liveWrap = document.getElementById('liveWrap'), liveText = document.getElementById('liveText');
 function updatePauseLabel(){
-  pauseBtn.textContent = paused ? L('resume') : L('pause');
+  pauseLbl.textContent = paused ? L('resume') : L('pause');
   liveText.textContent = paused ? L('paused') : L('live');
   liveWrap.classList.toggle('paused', paused);
 }
@@ -373,22 +407,22 @@ const IR = {
        thDevice:'Thiết bị', thZone:'Khu vực', thTime:'Thời điểm', thPeak:'Đỉnh (°C)', thLevel:'Mức', thDur:'Thời lượng',
        thAvg:'TB (°C)', thMax:'Max (°C)', thWarn:'Cảnh báo', thFault:'Sự cố', thStatus:'Trạng thái',
        lvlWarn:'Cảnh báo', lvlFault:'Sự cố', noWarn:'Không có cảnh báo nhiệt độ trong kỳ này.',
-       invalidRange:'⚠ Khoảng ngày không hợp lệ.', csvDone:'✓ Đã tải file CSV.', printStart:'🖨 Đang chuẩn bị báo cáo in…',
+       invalidRange:'Khoảng ngày không hợp lệ.', csvDone:'✓ Đã tải file CSV.', printStart:'Đang chuẩn bị báo cáo in…',
        colTime:'Thời gian', colPower:'Công suất (kW)', plantAvg:'TB nhà máy',
        csvTitle:'Báo cáo nhiệt độ nhà máy', periodLbl:'Kỳ báo cáo', genLbl:'Sinh lúc',
        warnTh:'Ngưỡng cảnh báo (°C)', faultTh:'Ngưỡng sự cố (°C)', metric:'Chỉ số', value:'Giá trị',
        secSummary:'TÓM TẮT', secTempTrend:'XU HƯỚNG NHIỆT ĐỘ (°C)', secPowerTrend:'XU HƯỚNG CÔNG SUẤT (kW)',
-       secWarn:'CẢNH BÁO NHIỆT ĐỘ', secDev:'TÓM TẮT THEO THIẾT BỊ' },
+       secWarn:'CẢNH BÁO NHIỆT ĐỘ', secDev:'TÓM TẮT THEO THIẾT BỊ', xlsxDone:'✓ Đã tải file Excel.' },
   en:{ close:'Close', avgTemp:'Avg temp', maxTemp:'Max temp', totWarn:'Warnings', faults:'Faults', avgPow:'Avg power', oee:'Efficiency (OEE)',
        thDevice:'Device', thZone:'Zone', thTime:'Time', thPeak:'Peak (°C)', thLevel:'Level', thDur:'Duration',
        thAvg:'Avg (°C)', thMax:'Max (°C)', thWarn:'Warn', thFault:'Fault', thStatus:'Status',
        lvlWarn:'Warning', lvlFault:'Fault', noWarn:'No temperature warnings in this period.',
-       invalidRange:'⚠ Invalid date range.', csvDone:'✓ CSV downloaded.', printStart:'🖨 Preparing print…',
+       invalidRange:'Invalid date range.', csvDone:'✓ CSV downloaded.', printStart:'Preparing print…',
        colTime:'Time', colPower:'Power (kW)', plantAvg:'Plant avg',
        csvTitle:'Plant temperature report', periodLbl:'Period', genLbl:'Generated',
        warnTh:'Warning threshold (°C)', faultTh:'Fault threshold (°C)', metric:'Metric', value:'Value',
        secSummary:'SUMMARY', secTempTrend:'TEMPERATURE TREND (°C)', secPowerTrend:'POWER TREND (kW)',
-       secWarn:'TEMPERATURE WARNINGS', secDev:'PER-DEVICE SUMMARY' }
+       secWarn:'TEMPERATURE WARNINGS', secDev:'PER-DEVICE SUMMARY', xlsxDone:'✓ Excel downloaded.' }
 };
 const LR = k => IR[lang][k];
 
@@ -515,12 +549,12 @@ function kpiTile(ico, val, sub, labelKey){ return '<div class="kpi glass"><div c
 function renderReportKPIs(data){
   const k=data.kpis;
   document.getElementById('rptKpi').innerHTML =
-    kpiTile('🌡', k.avgTemp.toFixed(0), '°C', 'avgTemp') +
-    kpiTile('🔥', k.maxTemp.toFixed(0), '°C · '+Lname(k.peakDev), 'maxTemp') +
-    kpiTile('⚠', k.totWarn, '', 'totWarn') +
-    kpiTile('⛔', k.faults, '', 'faults') +
-    kpiTile('⚡', Math.round(k.avgPow), 'kW', 'avgPow') +
-    kpiTile('📈', k.oee.toFixed(0), '%', 'oee');
+    kpiTile(ICO_THERMO, k.avgTemp.toFixed(0), '°C', 'avgTemp') +
+    kpiTile(ICO_FLAME, k.maxTemp.toFixed(0), '°C · '+Lname(k.peakDev), 'maxTemp') +
+    kpiTile(ICO_WARN, k.totWarn, '', 'totWarn') +
+    kpiTile(ICO_BAN, k.faults, '', 'faults') +
+    kpiTile(ICO_ZAP, Math.round(k.avgPow), 'kW', 'avgPow') +
+    kpiTile(ICO_TREND, k.oee.toFixed(0), '%', 'oee');
 }
 function renderReportLegend(){
   const wrap=document.getElementById('rptLegend'); wrap.innerHTML='';
@@ -605,54 +639,80 @@ function download(filename, content, type){
   a.href=URL.createObjectURL(blob); a.download=filename; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href), 3000);
 }
-/* CSV đầy đủ = FORM (tiêu đề + kỳ + KPI + ngưỡng + 2 bảng) + CHART (dữ liệu trend nhiệt & công suất).
-   Mỗi section cách 1 dòng trắng → mở trong Excel trông như báo cáo trên màn hình. */
-function buildReportCSV(){
-  const d=reportCache.data, k=d.kpis, rows=[];
-  // --- form: header ---
-  rows.push([LR('csvTitle')]);
-  rows.push([LR('periodLbl'), fmtRange(reportCache.start, reportCache.end)]);
-  rows.push([LR('genLbl'), fmtDateTime(new Date())]);
-  rows.push([LR('warnTh'), WARN]);
-  rows.push([LR('faultTh'), FAULT]);
-  rows.push([]);
-  // --- form: KPI summary ---
-  rows.push([LR('secSummary')]);
-  rows.push([LR('metric'), LR('value')]);
-  rows.push([LR('avgTemp'), k.avgTemp.toFixed(0)+' °C']);
-  rows.push([LR('maxTemp'), k.maxTemp.toFixed(0)+' °C ('+Lname(k.peakDev)+')']);
-  rows.push([LR('totWarn'), k.totWarn]);
-  rows.push([LR('faults'), k.faults]);
-  rows.push([LR('avgPow'), Math.round(k.avgPow)+' kW']);
-  rows.push([LR('oee'), k.oee.toFixed(0)+' %']);
-  rows.push([]);
-  // --- chart: temperature trend (theo khu vực + TB nhà máy) ---
-  rows.push([LR('secTempTrend')]);
-  rows.push([LR('colTime')].concat(ZONES.map(z=> lang==='vi'?z.vi:z.en)).concat([LR('plantAvg')]));
-  d.ts.forEach((t,i)=>{ const c=[fmtDateTime(t)]; ZONES.forEach(z=>c.push(d.zones[z.id][i].toFixed(1))); c.push(d.plantAvg[i].toFixed(1)); rows.push(c); });
-  rows.push([]);
-  // --- chart: power trend ---
-  rows.push([LR('secPowerTrend')]);
-  rows.push([LR('colTime'), LR('colPower')]);
-  d.ts.forEach((t,i)=> rows.push([fmtDateTime(t), d.power[i].toFixed(1)]) );
-  rows.push([]);
-  // --- form: warnings table ---
-  rows.push([LR('secWarn')]);
-  rows.push([LR('thDevice'), LR('thZone'), LR('thTime'), LR('thPeak'), LR('thLevel'), LR('thDur')]);
-  if(!d.events.length) rows.push([LR('noWarn')]);
-  else d.events.forEach(e=> rows.push([e.device.id+' '+Lname(e.device), e.zone, fmtDateTime(e.start), e.peak.toFixed(0), LR(e.level==='fault'?'lvlFault':'lvlWarn'), fmtDuration(e.duration)]) );
-  rows.push([]);
-  // --- form: per-device table ---
-  rows.push([LR('secDev')]);
-  rows.push([LR('thDevice'), LR('thZone'), LR('thAvg'), LR('thMax'), LR('thWarn'), LR('thFault'), LR('thStatus')]);
-  d.perDevice.forEach(p=> rows.push([p.device.id+' '+Lname(p.device), p.device.zone, p.avg.toFixed(0), p.max.toFixed(0), p.warnCount, p.faultCount, Lstatus(p.status)]) );
-  return '﻿' + rows.map(r=>r.map(escCell).join(',')).join('\r\n');
+/* ===== reportRows: dữ liệu báo cáo dạng mảng 2D — DÙNG CHUNG cho CSV + Excel (DRY).
+   Tái dựng y hệt bố cục đang show: FORM (đầu + 6 KPI + 2 bảng) + CHART (dữ liệu trend THEO THỜI GIAN
+   — nhiệt các khu vực + TB nhà máy, công suất) để vận hành theo dõi. Đổi ở đây → bump ?v= ở HTML. ===== */
+function reportRows(){
+  const d=reportCache.data, k=d.kpis, R=[], row=(...c)=>R.push(c);   // R = mảng dòng, mỗi dòng = mảng ô
+  const sec=t=>{ R.push([]); row(t); };                              // tiêu đề section (luôn cách 1 dòng)
+  // FORM — đầu báo cáo (tiêu đề / kỳ / lúc sinh / ngưỡng)
+  row(LR('csvTitle'));
+  row(LR('periodLbl'), fmtRange(reportCache.start, reportCache.end));
+  row(LR('genLbl'), fmtDateTime(new Date()));
+  row(LR('warnTh'), WARN); row(LR('faultTh'), FAULT);
+  // FORM — 6 KPI (đúng như 6 ô trên màn hình)
+  sec(LR('secSummary')); row(LR('metric'), LR('value'));
+  row(LR('avgTemp'), k.avgTemp.toFixed(0)+' °C');
+  row(LR('maxTemp'), k.maxTemp.toFixed(0)+' °C ('+Lname(k.peakDev)+')');
+  row(LR('totWarn'), k.totWarn); row(LR('faults'), k.faults);
+  row(LR('avgPow'), Math.round(k.avgPow)+' kW'); row(LR('oee'), k.oee.toFixed(0)+' %');
+  // CHART (theo thời gian) — nhiệt các khu vực + TB nhà máy  ← để vận hành theo dõi
+  sec(LR('secTempTrend')); row(LR('colTime'), ...ZONES.map(Lname), LR('plantAvg'));
+  d.ts.forEach((t,i)=> row(fmtDateTime(t), ...ZONES.map(z=>d.zones[z.id][i].toFixed(1)), d.plantAvg[i].toFixed(1)));
+  // CHART (theo thời gian) — công suất
+  sec(LR('secPowerTrend')); row(LR('colTime'), LR('colPower'));
+  d.ts.forEach((t,i)=> row(fmtDateTime(t), d.power[i].toFixed(1)));
+  // FORM — bảng cảnh báo nhiệt độ
+  sec(LR('secWarn')); row(LR('thDevice'),LR('thZone'),LR('thTime'),LR('thPeak'),LR('thLevel'),LR('thDur'));
+  if(!d.events.length) row(LR('noWarn'));
+  else d.events.forEach(e=> row(e.device.id+' '+Lname(e.device), e.zone, fmtDateTime(e.start), e.peak.toFixed(0), LR(e.level==='fault'?'lvlFault':'lvlWarn'), fmtDuration(e.duration)));
+  // FORM — bảng tóm tắt theo thiết bị
+  sec(LR('secDev')); row(LR('thDevice'),LR('thZone'),LR('thAvg'),LR('thMax'),LR('thWarn'),LR('thFault'),LR('thStatus'));
+  d.perDevice.forEach(p=> row(p.device.id+' '+Lname(p.device), p.device.zone, p.avg.toFixed(0), p.max.toFixed(0), p.warnCount, p.faultCount, Lstatus(p.status)));
+  return R;
 }
+/* CSV = reportRows ghép bằng dấu phẩy; ﻿ = BOM UTF-8 (Excel đọc đúng tiếng Việt) */
+function buildReportCSV(){ return '﻿'+reportRows().map(r=>r.map(escCell).join(',')).join('\r\n'); }
 function exportCSV(){
   if(!reportCache.data) return;
   const csv=buildReportCSV();
   download('bao-cao_TEA_'+toInputDate(reportCache.start)+'_'+toInputDate(reportCache.end)+'.csv', csv, 'text/csv;charset=utf-8;');
   showToast(LR('csvDone'));
+}
+
+/* ===== Excel .xlsx: báo cáo đầy đủ (reportRows) + 2 ẢNH chart (chụp đúng canvas đang show) → nhìn
+   trend bằng mắt được, giống report ~80%. .xlsx bản chất là 1 zip XML → đóng gói bằng JSZip (vendor). ===== */
+const XLSX_TYPE='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+const xmlEsc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const colName=n=>{ let s=''; while(n>=0){ s=String.fromCharCode(65+(n%26))+s; n=Math.floor(n/26)-1; } return s; };  // 0→A, 25→Z, 26→AA
+function buildXLSX(){
+  const rows=reportRows();
+  const body=rows.map((r,ri)=>'<row r="'+(ri+1)+'">'+r.map((v,ci)=>'<c r="'+colName(ci)+(ri+1)+'" t="inlineStr"><is><t xml:space="preserve">'+xmlEsc(v)+'</t></is></c>').join('')+'</row>').join('');
+  const sheet='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheetData>'+body+'</sheetData><drawing r:id="rId1"/></worksheet>';
+  const img1=document.getElementById('rptTemp').toDataURL('image/png').split(',')[1];   // chụp chart đang show
+  const img2=document.getElementById('rptPower').toDataURL('image/png').split(',')[1];
+  const EMU=px=>Math.round(px*9525), W=720, H=260, r0=rows.length+2;                    // đặt ảnh ngay dưới data
+  const anchor=(id,row)=>'<xdr:oneCellAnchor><xdr:from><xdr:col>0</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>'+row+'</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from><xdr:ext cx="'+EMU(W)+'" cy="'+EMU(H)+'"/><xdr:pic><xdr:nvPicPr><xdr:cNvPr id="'+id+'" name="Chart'+id+'"/><xdr:cNvPicPr/></xdr:nvPicPr><xdr:blipFill><a:blip r:embed="rId'+id+'"/><a:stretch><a:fillRect/></a:stretch></xdr:blipFill><xdr:spPr><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic><xdr:clientData/></xdr:oneCellAnchor>';
+  const drawing='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'+anchor(1,r0)+anchor(2,r0+15)+'</xdr:wsDr>';
+  const rel=(id,type,target)=>'<Relationship Id="'+id+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/'+type+'" Target="'+target+'"/>';
+  const HDR='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+  const z=new JSZip();
+  z.file('[Content_Types].xml',HDR+'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/><Override PartName="/xl/drawings/drawing1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/></Types>');
+  z.file('_rels/.rels',HDR+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+rel('rId1','officeDocument','xl/workbook.xml')+'</Relationships>');
+  z.file('xl/workbook.xml',HDR+'<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="'+xmlEsc(LR('csvTitle'))+'" sheetId="1" r:id="rId1"/></sheets></workbook>');
+  z.file('xl/_rels/workbook.xml.rels',HDR+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+rel('rId1','worksheet','worksheets/sheet1.xml')+rel('rId2','styles','styles.xml')+'</Relationships>');
+  z.file('xl/worksheets/sheet1.xml',sheet);
+  z.file('xl/worksheets/_rels/sheet1.xml.rels',HDR+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+rel('rId1','drawing','../drawings/drawing1.xml')+'</Relationships>');
+  z.file('xl/styles.xml',HDR+'<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="1"><font><sz val="11"/><name val="Calibri"/></font></fonts><fills count="1"><fill><patternFill patternType="none"/></fill></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/></cellXfs></styleSheet>');
+  z.file('xl/drawings/drawing1.xml',drawing);
+  z.file('xl/drawings/_rels/drawing1.xml.rels',HDR+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+rel('rId1','image','../media/image1.png')+rel('rId2','image','../media/image2.png')+'</Relationships>');
+  z.file('xl/media/image1.png',img1,{base64:true});
+  z.file('xl/media/image2.png',img2,{base64:true});
+  return z.generateAsync({type:'blob',mimeType:XLSX_TYPE});   // Promise<Blob>
+}
+function exportXLSX(){
+  if(!reportCache.data) return;
+  buildXLSX().then(blob=>{ download('bao-cao_TEA_'+toInputDate(reportCache.start)+'_'+toInputDate(reportCache.end)+'.xlsx', blob, XLSX_TYPE); showToast(LR('xlsxDone')); });
 }
 
 /* ---- print / PDF (canvas là bitmap → phải redraw với màu sáng trước khi in) ---- */
@@ -676,6 +736,7 @@ function initReport(){
   document.querySelectorAll('.rpt-preset').forEach(b=> b.addEventListener('click', ()=> setReportPreset(b.dataset.preset)) );
   document.getElementById('rptGen').addEventListener('click', applyCustomRange);
   document.getElementById('rptCsv').addEventListener('click', exportCSV);
+  document.getElementById('rptXlsx').addEventListener('click', exportXLSX);
   document.getElementById('rptPrint').addEventListener('click', printReport);
 }
 buildDeviceGrid();
