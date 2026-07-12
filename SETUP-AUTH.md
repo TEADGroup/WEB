@@ -15,7 +15,8 @@ và dán 2 giá trị. Ước ~5 phút.
 
 ## 2. Bật email/password auth
 
-- Dashboard → **Authentication → Sign In / Providers** → bật **Email**.
+- Dashboard → **Authenti
+cation → Sign In / Providers** → bật **Email**.
 - (Tuỳ chọn) **Authentication → Settings**: nếu muốn đăng ký xong vào ngay
   (không cần check email) → **tắt** "Confirm email". Nếu bật, sau khi đăng ký
   user phải click link xác nhận trong email trước khi đăng nhập được.

@@ -11,9 +11,12 @@
 
   <!-- Styles: base (chung) → auth (riêng login/profile) -->
   <link rel="stylesheet" href="assets/css/base.css?v=20260711" />
-  <link rel="stylesheet" href="assets/css/auth.css?v=20260711" />
+  <link rel="stylesheet" href="assets/css/auth.css?v=20260713" />
 </head>
 <body>
+
+  <!-- nền orb (chiều sâu, trang trí) -->
+  <div class="bg-orbs" aria-hidden="true"><span class="orb orb-1"></span><span class="orb orb-2"></span></div>
 
   <!-- nút ngôn ngữ + theme (góc trên phải) -->
   <div class="auth-tools">
@@ -21,47 +24,73 @@
     <button class="icon-btn" id="themeBtn" aria-label="Toggle theme" title="Sáng / Tối"></button>
   </div>
 
-  <div class="auth-wrap">
-    <div class="auth-card glass">
-      <!-- tabs -->
-      <div class="auth-tabs" role="tablist">
-        <button class="auth-tab active" id="tabLogin"    data-vi="Đăng nhập"    data-en="Sign in">Đăng nhập</button>
-        <button class="auth-tab"        id="tabRegister" data-vi="Đăng ký"      data-en="Sign up">Đăng ký</button>
+  <main class="auth-split">
+
+    <!-- ============ CỘT TRÁI: branding + visual 3D ============ -->
+    <aside class="auth-stage" aria-hidden="true">
+      <div class="auth-brand">
+        <img src="logo.png" alt="" class="auth-brand-logo" />
+        <span class="auth-brand-name">TEA</span>
       </div>
 
-      <h1 class="auth-title" id="authTitle">Đăng nhập</h1>
-      <p class="auth-sub" id="authSub">Vào dashboard giám sát nhà máy</p>
+      <!-- ảnh động 3D (GIF) — thay cho cube CSS-3D -->
+      <div class="auth-3d">
+        <img src="https://cdn.dribbble.com/userupload/21693424/file/original-6528fbbc4e7bcdbe07bce0cb3b0eaf02.gif" alt="Trực quan hóa nhà máy thông minh" referrerpolicy="no-referrer" onerror="this.style.display='none'" />
+      </div>
 
-      <div id="authWarn"></div>
+      <div class="auth-stage-copy">
+        <h2 data-vi="Giám sát nhà máy — thông minh &amp; liền mạch" data-en="Factory monitoring — smart &amp; seamless">Giám sát nhà máy — thông minh &amp; liền mạch</h2>
+        <p data-vi="Truy cập dashboard realtime: nhiệt độ, hiệu suất (OEE) và trạng thái thiết bị — mọi lúc, mọi nơi." data-en="Realtime dashboard access: temperature, efficiency (OEE) and device status — anytime, anywhere.">Truy cập dashboard realtime: nhiệt độ, hiệu suất (OEE) và trạng thái thiết bị — mọi lúc, mọi nơi.</p>
+      </div>
+    </aside>
 
-      <form id="authForm" novalidate autocomplete="on">
-        <div class="auth-field" id="nameField" hidden>
-          <label for="regName" data-vi="Họ tên" data-en="Full name">Họ tên</label>
-          <input type="text" id="regName" autocomplete="name" data-ph-vi="Nguyễn Văn A" data-ph-en="Jane Doe" placeholder="Nguyễn Văn A" />
+    <!-- ============ CỘT PHẢI: form đăng nhập ============ -->
+    <section class="auth-col">
+      <div class="auth-card glass">
+        <!-- logo nhỏ (chỉ hiện mobile, khi cột trái bị ẩn) -->
+        <img src="logo.png" alt="Logo TEA" class="auth-card-logo" />
+
+        <!-- tabs -->
+        <div class="auth-tabs" role="tablist">
+          <button class="auth-tab active" id="tabLogin"    data-vi="Đăng nhập"    data-en="Sign in">Đăng nhập</button>
+          <button class="auth-tab"        id="tabRegister" data-vi="Đăng ký"      data-en="Sign up">Đăng ký</button>
         </div>
-        <div class="auth-field">
-          <label for="emailIn" data-vi="Email" data-en="Email">Email</label>
-          <input type="email" id="emailIn" autocomplete="email" required data-ph-vi="ban@email.com" data-ph-en="you@email.com" placeholder="ban@email.com" />
-        </div>
-        <div class="auth-field has-toggle">
-          <label for="pwIn" data-vi="Mật khẩu" data-en="Password">Mật khẩu</label>
-          <input type="password" id="pwIn" autocomplete="current-password" required data-ph-vi="••••••••" data-ph-en="••••••••" placeholder="••••••••" />
-          <button type="button" class="auth-toggle" id="pwToggle" aria-label="Hiện/ẩn mật khẩu" title="Hiện/ẩn mật khẩu">
-            <svg id="pwIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
 
-        <div class="auth-err" id="authErr" role="alert"></div>
+        <h1 class="auth-title" id="authTitle">Đăng nhập</h1>
+        <p class="auth-sub" id="authSub">Vào dashboard giám sát nhà máy</p>
 
-        <button type="submit" class="btn btn-primary auth-btn" id="authSubmit">Đăng nhập</button>
-      </form>
+        <div id="authWarn"></div>
 
-      <p class="auth-foot">
-        <span id="footLabel">Chưa có tài khoản?</span>
-        <button type="button" id="authSwitch">Đăng ký</button>
-      </p>
-    </div>
-  </div>
+        <form id="authForm" novalidate autocomplete="on">
+          <div class="auth-field" id="nameField" hidden>
+            <label for="regName" data-vi="Họ tên" data-en="Full name">Họ tên</label>
+            <input type="text" id="regName" autocomplete="name" data-ph-vi="Nguyễn Văn A" data-ph-en="Jane Doe" placeholder="Nguyễn Văn A" />
+          </div>
+          <div class="auth-field">
+            <label for="emailIn" data-vi="Email" data-en="Email">Email</label>
+            <input type="email" id="emailIn" autocomplete="email" required data-ph-vi="ban@email.com" data-ph-en="you@email.com" placeholder="ban@email.com" />
+          </div>
+          <div class="auth-field has-toggle">
+            <label for="pwIn" data-vi="Mật khẩu" data-en="Password">Mật khẩu</label>
+            <input type="password" id="pwIn" autocomplete="current-password" required data-ph-vi="••••••••" data-ph-en="••••••••" placeholder="••••••••" />
+            <button type="button" class="auth-toggle" id="pwToggle" aria-label="Hiện/ẩn mật khẩu" title="Hiện/ẩn mật khẩu">
+              <svg id="pwIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+
+          <div class="auth-err" id="authErr" role="alert"></div>
+
+          <button type="submit" class="btn btn-primary auth-btn" id="authSubmit">Đăng nhập</button>
+        </form>
+
+        <p class="auth-foot">
+          <span id="footLabel">Chưa có tài khoản?</span>
+          <button type="button" id="authSwitch">Đăng ký</button>
+        </p>
+      </div>
+    </section>
+
+  </main>
 
   <div class="toast" id="toast"></div>
 
