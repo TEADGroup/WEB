@@ -71,3 +71,55 @@ drop policy if exists "avatars_read_public" on storage.objects;
 create policy "avatars_read_public"
   on storage.objects for select
   using (bucket_id = 'avatars');
+
+-- ===================== DASHBOARD: device_state (per-user, demo realtime) =====================
+-- Mỗi user có 8 thiết bị (1 row/device). Dashboard ghi+đọc mỗi giây (xem dashboard.js).
+-- RLS: user chỉ thấy/sửa row của chính mình.
+create table if not exists public.device_state (
+  user_id    uuid not null references auth.users(id) on delete cascade,
+  device_id  text not null,                 -- 'INJ-01' ... 'AIR-01'
+  zone       text not null default '',
+  base       double precision not null default 50,
+  is_on      boolean not null default true,  -- 'on' là SQL reserved → dùng is_on
+  temp       double precision not null default 50,
+  target     double precision not null default 50,
+  load       double precision not null default 70,
+  status     text not null default 'running',
+  updated_at timestamptz not null default now(),
+  primary key (user_id, device_id)
+);
+
+alter table public.device_state enable row level security;
+
+drop policy if exists "device_state_select_own" on public.device_state;
+create policy "device_state_select_own"
+  on public.device_state for select
+  using (auth.uid() = user_id);
+
+drop policy if exists "device_state_insert_own" on public.device_state;
+create policy "device_state_insert_own"
+  on public.device_state for insert
+  with check (auth.uid() = user_id);
+
+drop policy if exists "device_state_update_own" on public.device_state;
+create policy "device_state_update_own"
+  on public.device_state for update
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+drop policy if exists "device_state_delete_own" on public.device_state;
+create policy "device_state_delete_own"
+  on public.device_state for delete
+  using (auth.uid() = user_id);
+
+-- updated_at tự đổi mỗi lần row update → trong Table Editor thấy "đang ghi mỗi giây".
+create extension if not exists moddatetime;
+drop trigger if exists on_device_state_moddatetime on public.device_state;
+create trigger on_device_state_moddatetime
+  before update on public.device_state
+  for each row execute function moddatetime(updated_at);
+
+-- Thêm bảng vào publication realtime (dự phòng phase 2: multi-tab sync).
+do $$ begin
+  alter publication supabase_realtime add table public.device_state;
+exception when duplicate_object then null; end $$;

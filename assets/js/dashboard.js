@@ -25,6 +25,24 @@
 var signoutBtn = document.getElementById('signoutBtn');
 if (signoutBtn) signoutBtn.addEventListener('click', function () { TEA.Auth.signOut('../login.html'); });
 
+/* nhấn avatar → dropdown Thông tin / Đăng xuất (mọi viewport) */
+var userChip = document.getElementById('userChip');
+var userMenu = document.getElementById('userMenu');
+var userMenuSignout = document.getElementById('userMenuSignout');
+if (userChip && userMenu) {
+  userChip.addEventListener('click', function (e) {
+    e.preventDefault();
+    userMenu.classList.toggle('open');
+  });
+  document.addEventListener('click', function (e) {   /* click ngoài → đóng menu */
+    if (userMenu.classList.contains('open') &&
+        !userMenu.contains(e.target) && !userChip.contains(e.target)) {
+      userMenu.classList.remove('open');
+    }
+  });
+}
+if (userMenuSignout) userMenuSignout.addEventListener('click', function () { TEA.Auth.signOut('../login.html'); });
+
 /* ===== palette / status ===== */
 const COLORS = { accent:'#2563eb', accent2:'#8b5cf6', neon:'#22d3ee', amber:'#f59e0b', green:'#22c55e', red:'#ef4444', gray:'#94a3b8' };
 /* icon SVG (theme toggle — thay emoji) */
@@ -385,6 +403,7 @@ function tick(){
   updateClock(now);
   if(paused) return;
   advance();
+  persistDevices();   // ghi 8 rows vào Supabase mỗi giây (fire-and-forget)
   updateKPIs();
   updateDeviceCards();
   if(alertsDirty) renderAlerts();
@@ -739,24 +758,73 @@ function initReport(){
   document.getElementById('rptXlsx').addEventListener('click', exportXLSX);
   document.getElementById('rptPrint').addEventListener('click', printReport);
 }
-buildDeviceGrid();
-renderLegend();
-seeding = true;
-for(let i=0;i<HIST;i++) advance();
-seeding = false;
-// seed a couple of context alerts (acked)
-alerts.push({ t:new Date(Date.now()-180000), vi:'ℹ Hệ thống giám sát đã trực tuyến.', en:'ℹ Monitoring system online.', level:'info', ack:true });
-alerts.push({ t:new Date(Date.now()-60000),  vi:'ℹ Đã đồng bộ 8 thiết bị trên 4 khu vực.', en:'ℹ Synced 8 devices across 4 zones.', level:'info', ack:true });
-alertsDirty = true;
+/* ===================== SUPABASE PERSIST (per-user device_state) =====================
+   Dashboard tự ghi+đọc mỗi giây. Fallback mock nếu Supabase chưa cấu hình/chưa chạy schema.
+   Không đụng render — chỉ nền phía sau mảng DEVICES. */
+let dashUid = null;
 
-setupHover(document.getElementById('chartTemp'));
-setupHover(document.getElementById('chartPower'));
+async function loadDevices(uid){
+  if(!window.supa) return;
+  try {
+    const { data, error } = await window.supa.from('device_state').select('*').eq('user_id', uid);
+    if(error) throw error;
+    if(data && data.length){
+      const byId = {}; data.forEach(r => byId[r.device_id] = r);
+      DEVICES.forEach(d => {
+        const r = byId[d.id]; if(!r) return;
+        d.base = r.base; d.on = !!r.is_on; d.temp = r.temp; d.target = r.target; d.load = r.load; d.status = r.status;
+        d.hist = Array.from({length:30}, () => d.temp);   // dựng lại hist từ temp hiện tại
+      });
+    } else {
+      // user mới chưa có rows → seed 8 từ identity DEVICES
+      const rows = DEVICES.map(d => ({
+        user_id: uid, device_id: d.id, zone: d.zone, base: d.base,
+        is_on: d.on, temp: d.temp, target: d.target, load: d.load, status: d.status
+      }));
+      const { error: ie } = await window.supa.from('device_state').insert(rows);
+      if(ie) throw ie;
+    }
+  } catch(e){ console.warn('[TEA] load device_state thất bại — dùng mock.', e); }
+}
 
-initReport();
+function persistDevices(){
+  if(!window.supa || !dashUid) return;
+  try {
+    const rows = DEVICES.map(d => ({
+      user_id: dashUid, device_id: d.id, zone: d.zone, base: d.base,
+      is_on: d.on, temp: Math.round(d.temp*100)/100, target: d.target,
+      load: Math.round(d.load*100)/100, status: d.status
+    }));
+    window.supa.from('device_state').upsert(rows, { onConflict: 'user_id,device_id' })
+      .then(()=>{}, err => console.warn('[TEA] persist device_state lỗi', err));
+  } catch(e){ /* silent — không phá render */ }
+}
 
-setLang(lang);          // applies language + renders dynamic + drawAll
-updatePauseLabel();
-updateClock(new Date());
-tick();
-setInterval(tick, 1000);
-window.addEventListener('resize', debounce(drawAll, 150));
+async function init(){
+  buildDeviceGrid();
+  renderLegend();
+  try {
+    const u = await TEA.Auth.getCurrentUser();
+    if(u){ dashUid = u.id; await loadDevices(u.id); }   // load/seed 8 thiết bị của user
+  } catch(e){ console.warn('[TEA] auth user chưa sẵn sàng — dùng mock.', e); }
+  seeding = true;
+  for(let i=0;i<HIST;i++) advance();
+  seeding = false;
+  // seed a couple of context alerts (acked)
+  alerts.push({ t:new Date(Date.now()-180000), vi:'ℹ Hệ thống giám sát đã trực tuyến.', en:'ℹ Monitoring system online.', level:'info', ack:true });
+  alerts.push({ t:new Date(Date.now()-60000),  vi:'ℹ Đã đồng bộ 8 thiết bị trên 4 khu vực.', en:'ℹ Synced 8 devices across 4 zones.', level:'info', ack:true });
+  alertsDirty = true;
+
+  setupHover(document.getElementById('chartTemp'));
+  setupHover(document.getElementById('chartPower'));
+
+  initReport();
+
+  setLang(lang);          // applies language + renders dynamic + drawAll
+  updatePauseLabel();
+  updateClock(new Date());
+  tick();
+  setInterval(tick, 1000);
+  window.addEventListener('resize', debounce(drawAll, 150));
+}
+init();

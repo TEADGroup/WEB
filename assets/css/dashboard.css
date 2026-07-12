@@ -59,7 +59,7 @@ header.top { position:sticky; top:0; z-index:50; background:var(--surface); back
 .brand > span { min-width:0; overflow:hidden; }
 .brand small { display:block; font-size:.62rem; font-weight:500; letter-spacing:.5px; color:var(--text-muted); }
 .top-spacer { margin-left:auto; }
-.top-actions { display:flex; align-items:center; gap:8px; }
+.top-actions { display:flex; align-items:center; gap:8px; position:relative; }
 
 /* user chip (auth) — avatar link sang profile + tên + nút sign-out */
 .user-chip { width:40px; height:40px; border-radius:50%; padding:2px; background:var(--grad); overflow:hidden; flex-shrink:0; cursor:pointer; transition:transform .2s ease, box-shadow .2s ease; }
@@ -68,6 +68,21 @@ header.top { position:sticky; top:0; z-index:50; background:var(--surface); back
 .user-name { font-size:.82rem; font-weight:600; color:var(--text); max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 #signoutBtn { color:var(--text-muted); }
 #signoutBtn:hover { color:var(--status-fault); }
+
+/* dropdown từ avatar: Thông tin + Đăng xuất (hiện khi nhấn avatar) */
+.user-menu {
+  display:none; position:absolute; top:calc(100% + 8px); right:0; z-index:60;
+  min-width:160px; flex-direction:column; gap:2px; padding:6px;
+  background:var(--bg-2); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow);
+}
+.user-menu.open { display:flex; }   /* base — desktop không toggle nên không bao giờ open */
+.user-menu-item {
+  display:flex; align-items:center; gap:8px; width:100%; padding:10px 12px; border-radius:8px;
+  font-size:.88rem; font-weight:600; color:var(--text); background:transparent; border:0;
+  cursor:pointer; font-family:inherit; text-align:left; transition:background .15s ease;
+}
+.user-menu-item:hover { background:var(--surface-strong); }
+.user-menu-item.signout { color:var(--status-fault); }
 main.auth-pending { visibility:hidden; }
 
 .live { display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:999px; background:var(--surface-strong); border:1px solid var(--border); font-size:.72rem; font-weight:700; letter-spacing:.5px; font-family:'Inter'; }
