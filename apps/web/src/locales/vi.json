@@ -28,6 +28,51 @@
     "heroSecondary": "Liên hệ tư vấn",
     "statsTitle": "Năng lực nổi bật"
   },
+  "About": {
+    "eyebrow": "Về chúng tôi",
+    "title": "Giới thiệu",
+    "lead": "TEA Group chuyên tự động hoá công nghiệp, điện tự động và tích hợp hệ thống — cung cấp giải pháp kỹ thuật trọn gói cho nhà máy và công trình.",
+    "missionTitle": "Tầm nhìn & Sứ mệnh",
+    "mission": "Kiến tạo nhà máy thông minh, an toàn và hiệu quả thông qua các giải pháp kỹ thuật tích hợp, bền vững.",
+    "capabilityTitle": "Năng lực kỹ thuật",
+    "teamTitle": "Đội ngũ",
+    "team": "Đội ngũ kỹ sư giàu kinh nghiệm, luôn cập nhật công nghệ mới để mang lại giá trị thực cho khách hàng."
+  },
+  "Solutions": {
+    "eyebrow": "Năng lực",
+    "title": "Giải pháp & Dịch vụ",
+    "subtitle": "Từ thiết kế đến vận hành — chúng tôi đồng hành cùng nhà máy của bạn."
+  },
+  "Projects": {
+    "eyebrow": "Thực nghiệm",
+    "title": "Dự án",
+    "subtitle": "Các dự án tiêu biểu của TEA Group, trình bày dưới dạng sơ đồ tương tác.",
+    "comingSoon": "Sơ đồ cây dự án tương tác đang được hoàn thiện (Giai đoạn 3)."
+  },
+  "News": {
+    "title": "Tin tức",
+    "comingSoon": "Trang tin tức sẽ ra mắt sớm."
+  },
+  "Careers": {
+    "title": "Tuyển dụng",
+    "comingSoon": "Cơ hội nghề nghiệp sẽ được đăng tải tại đây."
+  },
+  "Contact": {
+    "eyebrow": "Kết nối",
+    "title": "Liên hệ",
+    "subtitle": "Hãy cho chúng tôi biết nhu cầu của bạn — đội ngũ kỹ thuật sẽ phản hồi sớm.",
+    "name": "Họ tên",
+    "email": "Email",
+    "phone": "Số điện thoại",
+    "subject": "Chủ đề",
+    "message": "Nội dung",
+    "send": "Gửi tin nhắn",
+    "sending": "Đang gửi…",
+    "success": "Cảm ơn bạn! Tin nhắn đã được gửi, chúng tôi sẽ phản hồi sớm.",
+    "error": "Có lỗi xảy ra. Vui lòng thử lại hoặc gửi email trực tiếp.",
+    "addressLabel": "Địa chỉ",
+    "phoneLabel": "Điện thoại"
+  },
   "Footer": {
     "tagline": "Công nghệ tự động hoá tương lai",
     "address": "294/41/18 Đường số 8, P. Thông Tây Hội, TP. Hồ Chí Minh",

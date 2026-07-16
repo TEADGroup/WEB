@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { Link } from '@/i18n/navigation';
+import { Hero3D } from '@/components/3d/Hero3D';
 
 export default async function HomePage({
   params,
@@ -21,9 +22,15 @@ export default async function HomePage({
 
   return (
     <div className="flex flex-col">
-      {/* Hero (3D arrives in Phase 2; placeholder layout for now) */}
-      <section className="relative flex min-h-[70vh] flex-col justify-center py-24">
-        <div className="max-w-3xl animate-fade-up">
+      {/* Hero with live 3D scene behind the copy. */}
+      <section className="relative flex min-h-[78vh] flex-col justify-center overflow-hidden py-24">
+        <Hero3D />
+        {/* left-side scrim keeps the copy readable over the 3D */}
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-r from-white/70 via-white/10 to-transparent dark:from-slate-950/60 dark:via-transparent"
+        />
+        <div className="relative z-10 max-w-3xl animate-fade-up">
           <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-brand-blue/20 bg-brand-blue/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-blue">
             {t('heroEyebrow')}
           </p>

@@ -28,6 +28,51 @@
     "heroSecondary": "Contact us",
     "statsTitle": "Key capabilities"
   },
+  "About": {
+    "eyebrow": "About us",
+    "title": "About",
+    "lead": "TEA Group specializes in industrial automation, electrical control, and system integration — delivering turnkey technical solutions for plants and projects.",
+    "missionTitle": "Vision & Mission",
+    "mission": "Building smart, safe, and efficient plants through integrated, sustainable engineering solutions.",
+    "capabilityTitle": "Technical capabilities",
+    "teamTitle": "Team",
+    "team": "Experienced engineers who keep up with the latest technology to deliver real value to clients."
+  },
+  "Solutions": {
+    "eyebrow": "Capabilities",
+    "title": "Solutions & Services",
+    "subtitle": "From design to operations — we partner with your plant end to end."
+  },
+  "Projects": {
+    "eyebrow": "Our work",
+    "title": "Projects",
+    "subtitle": "Selected TEA Group projects, presented as an interactive diagram.",
+    "comingSoon": "The interactive project tree is being finalized (Phase 3)."
+  },
+  "News": {
+    "title": "News",
+    "comingSoon": "The news page is coming soon."
+  },
+  "Careers": {
+    "title": "Careers",
+    "comingSoon": "Career opportunities will be posted here."
+  },
+  "Contact": {
+    "eyebrow": "Get in touch",
+    "title": "Contact",
+    "subtitle": "Tell us what you need — our engineering team will respond shortly.",
+    "name": "Full name",
+    "email": "Email",
+    "phone": "Phone",
+    "subject": "Subject",
+    "message": "Message",
+    "send": "Send message",
+    "sending": "Sending…",
+    "success": "Thank you! Your message has been sent; we'll reply soon.",
+    "error": "Something went wrong. Please try again or email us directly.",
+    "addressLabel": "Address",
+    "phoneLabel": "Phone"
+  },
   "Footer": {
     "tagline": "Future-forward automation technology",
     "address": "294/41/18 Street No. 8, Thong Tay Hoi Ward, Ho Chi Minh City",

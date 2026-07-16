@@ -21,8 +21,10 @@ Source of truth for *what's done* and *what's next*. Full design rationale in [`
 3. Theme had two `useTimeOfDay` instances fighting → single `<ThemeProvider>` Context.
 4. Dark override kept the day gradient → added `resolvePhase()` (Dark→night, Light→day).
 
-## Phase 2 — IN PROGRESS 🚧
-Hero 3D (React Three Fiber): procedural robot arm, electric cabinet, gears, circuit particles + Controller GLB. Plus public pages: About, Solutions, Projects (placeholder until Phase 3), News, Careers, Contact (form UI).
+## Phase 2 — DONE ✅ (verified 2026-07-16)
+- **Hero 3D** (React Three Fiber + drei): procedural **Gears** (brand blue/green/red), articulated **RobotArm**, **Controller** cabinet with blinking LEDs + glowing screen, and a drifting **CircuitParticles** field. Scene is theme-aware (ambient lowered + emissive glow boosted in dark mode). `Hero3D` lazy-mounts client-side (`dynamic`, `ssr:false`), with a poster fallback and `prefers-reduced-motion` support. Controller is procedural for now — a real GLB can drop in at `/models3d/controller.glb` later.
+- **Public pages**: About, Solutions, Projects (Phase-3 placeholder), News, Careers, Contact (client `ContactForm` with honeypot → posts to `/api/contact`, wired in Phase 6; Google Maps embed). Shared `PageHeader`.
+- Verified: `typecheck` clean; all 9 routes return 200 (`/vi`, `/en`, `/vi/{about,solutions,projects,news,careers,contact}`, `/en/contact`); 3D scene + contact form confirmed in screenshots.
 
 ## Phase 3 — PENDING
 Project tree via `@xyflow/react` v12 + dagre auto-layout, animated "signal" edges, minimap, mobile accordion, search/filter with `setCenter` focus.
