@@ -6,14 +6,13 @@ import { Link } from '@/i18n/navigation';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { ThemeToggle } from './ThemeToggle';
 
+// One-page anchors — nav scrolls to sections on the home page.
 const NAV = [
   { key: 'home', href: '/' },
-  { key: 'about', href: '/about' },
-  { key: 'solutions', href: '/solutions' },
-  { key: 'projects', href: '/projects' },
-  { key: 'news', href: '/news' },
-  { key: 'careers', href: '/careers' },
-  { key: 'contact', href: '/contact' },
+  { key: 'about', href: '/#about' },
+  { key: 'solutions', href: '/#solutions' },
+  { key: 'projects', href: '/#projects' },
+  { key: 'contact', href: '/#contact' },
 ] as const;
 
 export function PublicHeader() {

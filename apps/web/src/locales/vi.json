@@ -24,9 +24,16 @@
     "heroEyebrow": "Tự động hoá công nghiệp & Điện tự động",
     "heroTitle": "Kiến tạo nhà máy tương lai cùng TEA Group",
     "heroSubtitle": "Giải pháp kỹ thuật tích hợp, tủ điện điều khiển, PLC/SCADA và tự động hoá dây chuyền cho nhà máy và công trình.",
-    "heroCta": "Khám phá dự án",
+    "heroCta": "Dịch vụ của chúng tôi",
     "heroSecondary": "Liên hệ tư vấn",
-    "statsTitle": "Năng lực nổi bật"
+    "statsTitle": "Năng lực nổi bật",
+    "solutionsEyebrow": "Năng lực",
+    "solutionsTitle": "Giải pháp & Dịch vụ",
+    "solutionsSubtitle": "Từ thiết kế đến vận hành — chúng tôi đồng hành cùng nhà máy của bạn.",
+    "projectsEyebrow": "Thực nghiệm",
+    "projectsTitle": "Dự án",
+    "projectsSubtitle": "Các dự án tiêu biểu của TEA Group, trình bày dưới dạng sơ đồ tương tác.",
+    "projectsComingSoon": "Sơ đồ cây dự án tương tác đang được hoàn thiện (Giai đoạn 3)."
   },
   "About": {
     "eyebrow": "Về chúng tôi",

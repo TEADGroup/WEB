@@ -24,9 +24,16 @@
     "heroEyebrow": "Industrial automation & electrical control",
     "heroTitle": "Engineering the factory of the future with TEA Group",
     "heroSubtitle": "Integrated technical solutions, control cabinets, PLC/SCADA and line automation for plants and projects.",
-    "heroCta": "Explore projects",
-    "heroSecondary": "Contact us",
-    "statsTitle": "Key capabilities"
+    "heroCta": "Our services",
+    "heroSecondary": "Get in touch",
+    "statsTitle": "Key capabilities",
+    "solutionsEyebrow": "Capabilities",
+    "solutionsTitle": "Solutions & Services",
+    "solutionsSubtitle": "From design to operations — we partner with your plant end to end.",
+    "projectsEyebrow": "Our work",
+    "projectsTitle": "Projects",
+    "projectsSubtitle": "Selected TEA Group projects, presented as an interactive diagram.",
+    "projectsComingSoon": "The interactive project tree is being finalized (Phase 3)."
   },
   "About": {
     "eyebrow": "About us",
