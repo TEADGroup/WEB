@@ -21,10 +21,13 @@ Source of truth for *what's done* and *what's next*. Full design rationale in [`
 3. Theme had two `useTimeOfDay` instances fighting → single `<ThemeProvider>` Context.
 4. Dark override kept the day gradient → added `resolvePhase()` (Dark→night, Light→day).
 
-## Phase 2 — DONE ✅ (verified 2026-07-16)
-- **Hero 3D** (React Three Fiber + drei): procedural **Gears** (brand blue/green/red), articulated **RobotArm**, **Controller** cabinet with blinking LEDs + glowing screen, and a drifting **CircuitParticles** field. Scene is theme-aware (ambient lowered + emissive glow boosted in dark mode). `Hero3D` lazy-mounts client-side (`dynamic`, `ssr:false`), with a poster fallback and `prefers-reduced-motion` support. Controller is procedural for now — a real GLB can drop in at `/models3d/controller.glb` later.
-- **Public pages**: About, Solutions, Projects (Phase-3 placeholder), News, Careers, Contact (client `ContactForm` with honeypot → posts to `/api/contact`, wired in Phase 6; Google Maps embed). Shared `PageHeader`.
-- Verified: `typecheck` clean; all 9 routes return 200 (`/vi`, `/en`, `/vi/{about,solutions,projects,news,careers,contact}`, `/en/contact`); 3D scene + contact form confirmed in screenshots.
+## Phase 2 — DONE ✅ (verified + revised 2026-07-16)
+- **Hero 3D** (React Three Fiber + drei): procedural **Gears** (brand blue/green/red), articulated **RobotArm**, **Controller** cabinet with blinking LEDs + glowing screen, and a drifting **CircuitParticles** field. Scene is theme-aware. `Hero3D` lazy-mounts client-side with poster fallback and `prefers-reduced-motion` support.
+- **Single-page layout**: merged About → Solutions → Projects → Contact into one scrollable page with hash-anchor nav (`/vi#solutions`). Removed 6 standalone routes. `scroll-behavior: smooth` in `globals.css`.
+- **Removed all box borders**: cards now use `bg-white/40 backdrop-blur` tint only — no `border` class on any section.
+- **3D model solution cards**: `ModelViewer` lazy-mounts via IntersectionObserver, loads a `.glb` with auto-scale to 2.4-unit bounding box. 3 of 5 solution cards display real models (BrainStem, CesiumMilkTruck, ChronographWatch — downloaded CC0 from Khronos glTF Sample Assets, stored in `public/models3d/`). The 2 remaining cards show a procedural emoji fallback.
+- **Feedback incorporated**: (1) no box borders, (2) everything on one page, (3) animated 3D on solution cards.
+- Verified: `typecheck` clean; `curl` confirms all 5 section IDs rendered; content strings correct in both locales; `canvas` count 0 in SSR (expected — R3F is client-only).
 
 ## Phase 3 — PENDING
 Project tree via `@xyflow/react` v12 + dagre auto-layout, animated "signal" edges, minimap, mobile accordion, search/filter with `setCenter` focus.

@@ -77,7 +77,8 @@ node scripts/phase1-screenshot.mjs
 Uses bundled Chromium (no admin). Requires `pnpm dev` running on :3000.
 
 ## 7. Troubleshooting
-- **Port 3000 busy** → `pnpm --filter @tea/web dev -- -p 3001`.
+- **Port 3000 busy** → `pnpm --filter @tea/web dev -- -p 3001` (or let Next auto-fallback).
+- **Hash anchors (#) not scrolling** → ensure `<section id="...">` is rendered server-side (curl confirms) and `scroll-behavior: smooth` is in `globals.css`.
 - **next/font fails to fetch** → needs internet at first dev boot (downloads Google fonts).
 - **`hasLocale` not found** → expected; we use a local `isLocale()` (see CLAUDE.md gotchas).
 - **Theme buttons don't respond** → ensure components read from `<ThemeProvider>`, not a standalone hook.

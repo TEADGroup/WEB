@@ -5,7 +5,7 @@ Corporate website for **TEA Group** (industrial automation & electrical control,
 
 ## Status — 2026-07-16
 - **Phase 1 DONE + verified**: monorepo, i18n (next-intl), dynamic theme (Context + @property), Supabase schema + RLS + storage + seed, brand design (real logo, brand-color gradient, Space Grotesk, uppercase labels).
-- **Phase 2 DONE + verified**: Hero 3D (React Three Fiber: gears, robot arm, controller w/ blinking LEDs, particles) + public pages (About, Solutions, Projects, News, Careers, Contact with form).
+- **Phase 2 DONE + revised (1-page + 3D models)**: Hero 3D (gears, robot arm, controller, particles). Public site merged into single-page scroll (hash-anchor nav). Borders removed. Solution cards with 3D models (BrainStem, CesiumMilkTruck, ChronographWatch).
 - Phases 3–6 pending: project tree (React Flow), Auth+Admin+RBAC, AI HDVH parser, email+polish.
 - Full plan: [`reports/federated-swimming-waterfall.md`](reports/federated-swimming-waterfall.md). Phase log + gotchas: [`docs/progress.md`](docs/progress.md).
 
