@@ -1,0 +1,41 @@
+{
+  "Nav": {
+    "home": "Home",
+    "about": "About",
+    "solutions": "Solutions",
+    "projects": "Projects",
+    "news": "News",
+    "careers": "Careers",
+    "contact": "Contact",
+    "login": "Log in"
+  },
+  "Theme": {
+    "label": "Theme",
+    "auto": "Auto",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "Language": {
+    "label": "Language",
+    "vi": "Tiếng Việt",
+    "en": "English"
+  },
+  "Home": {
+    "heroEyebrow": "Industrial automation & electrical control",
+    "heroTitle": "Engineering the factory of the future with TEA Group",
+    "heroSubtitle": "Integrated technical solutions, control cabinets, PLC/SCADA and line automation for plants and projects.",
+    "heroCta": "Explore projects",
+    "heroSecondary": "Contact us",
+    "statsTitle": "Key capabilities"
+  },
+  "Footer": {
+    "tagline": "Future-forward automation technology",
+    "address": "294/41/18 Street No. 8, Thong Tay Hoi Ward, Ho Chi Minh City",
+    "rights": "All rights reserved."
+  },
+  "Common": {
+    "loading": "Loading…",
+    "comingSoon": "Coming soon",
+    "back": "Back"
+  }
+}

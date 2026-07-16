@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------ */
+/* Animatable theme color properties.                                   */
+/* Registering them as <color> lets the browser interpolate the gradient*/
+/* stops smoothly when the time-of-day phase changes. CSS @property is  */
+/* the trick that makes gradient transitions work without a JS rAF loop. */
+/* ------------------------------------------------------------------ */
+@property --tea-bg-from {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #dbeafe;
+}
+@property --tea-bg-via {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #e0f2fe;
+}
+@property --tea-bg-to {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #f8fafc;
+}
+@property --tea-accent {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #0ea5e9;
+}
+
+:root {
+  /* SSR-safe defaults (the `day` phase). The no-flash inline script in the
+     root layout overrides these before hydration using the VN clock. */
+  --tea-bg-from: #dbeafe;
+  --tea-bg-via: #e0f2fe;
+  --tea-bg-to: #f8fafc;
+  --tea-accent: #0ea5e9;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100dvh;
+  background: linear-gradient(135deg, var(--tea-bg-from), var(--tea-bg-via), var(--tea-bg-to));
+  background-attachment: fixed;
+  color: #0f172a;
+  color-scheme: light;
+  transition:
+    --tea-bg-from 1.5s ease,
+    --tea-bg-via 1.5s ease,
+    --tea-bg-to 1.5s ease,
+    --tea-accent 1.5s ease,
+    color 0.3s ease;
+}
+
+html.dark body {
+  color: #e5e7eb;
+  color-scheme: dark;
+}
+
+/* Respect users who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
