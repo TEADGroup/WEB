@@ -17,9 +17,9 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'sw
 const display = Space_Grotesk({ subsets: ['latin'], variable: '--font-display', display: 'swap' });
 
 export const metadata: Metadata = {
-  title: { default: 'TEA Group', template: '%s · TEA Group' },
+  title: { default: 'TEA Co., Ltd', template: '%s · TEA Co., Ltd' },
   description:
-    'TEA Group — tự động hoá công nghiệp & điện tự động. Giải pháp kỹ thuật tích hợp cho nhà máy và công trình.',
+    'TEA Co., Ltd — tự động hoá công nghiệp & điện tự động. Giải pháp kỹ thuật tích hợp cho nhà máy và công trình.',
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
   icons: { icon: '/images/logo.png', apple: '/images/logo.png' },
 };

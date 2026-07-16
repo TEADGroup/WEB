@@ -21,17 +21,17 @@ export function PublicHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-black/5 bg-white/40 backdrop-blur-md dark:border-white/10 dark:bg-white/5">
       <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3">
-        <Link href="/" className="flex items-center gap-2.5" aria-label="TEA Group — home">
+        <Link href="/" className="flex items-center gap-2.5" aria-label="TEA Co., Ltd — home">
           <Image
             src="/images/logo.png"
-            alt="TEA Group"
+            alt="TEA Co., Ltd"
             width={910}
             height={894}
             priority
             className="h-9 w-auto"
           />
           <span className="hidden font-display text-lg font-bold uppercase tracking-wide sm:inline">
-            TEA Group
+            TEA Co., Ltd
           </span>
         </Link>
 

@@ -18,6 +18,8 @@
     "@supabase/supabase-js": "^2.45.4",
     "@tea/shared": "workspace:*",
     "framer-motion": "^12.42.2",
+    "lottie-web": "^5.13.0",
+    "lucide-react": "^1.24.0",
     "next": "^15.1.6",
     "next-intl": "^3.26.3",
     "react": "^19.0.0",
