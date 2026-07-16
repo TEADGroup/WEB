@@ -1,0 +1,28 @@
+{
+  "name": "tea-group",
+  "version": "0.1.0",
+  "private": true,
+  "description": "TEA Group — corporate website (industrial & electrical automation) with CMS, project tree, and AI HDVH document parsing.",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "dev:web": "pnpm --filter @tea/web dev",
+    "build:web": "pnpm --filter @tea/web build",
+    "db:reset": "supabase db reset",
+    "db:push": "supabase db push",
+    "db:types": "pnpm --filter @tea/web db:types",
+    "clean": "turbo run clean && rimraf node_modules"
+  },
+  "devDependencies": {
+    "playwright": "^1.61.1",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  }
+}

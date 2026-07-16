@@ -1,0 +1,5 @@
+packages:
+  # Applications (only `web` for now — api is folded into Next.js Route Handlers)
+  - "apps/*"
+  # Shared libraries (zod schemas, types, constants)
+  - "packages/*"
