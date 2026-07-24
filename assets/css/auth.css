@@ -1,0 +1,168 @@
+/* =====================================================================
+   auth.css — RIÊNG trang login.html + profile.html
+   ---------------------------------------------------------------------
+   Nạp SAU base.css. Dùng lại token (--bg, --text, --accent, --surface,
+   --border, --grad, --radius, --space-*). Style: glass card, tabs,
+   fields, avatar ring — theo design-system/tea-automation/MASTER.md.
+   ===================================================================== */
+
+/* Token riêng trang login — override cục bộ (logo TEA có dải xanh dương → xanh lá).
+   Không đụng base.css → không lan ra toàn site. Theo theming rule, page được phép override token. */
+:root {
+  --tea-blue: #2E86C1;
+  --tea-green: #1E8449;
+  --grad-login: linear-gradient(135deg, #2E86C1 0%, #1E8449 100%);
+}
+
+/* cluster nút lang/theme góc trên phải */
+.auth-tools { position: fixed; top: 18px; right: 18px; display: flex; gap: 8px; z-index: 10; }
+
+/* ===================== SPLIT-SCREEN LAYOUT ===================== */
+.auth-split { min-height: 100vh; display: grid; grid-template-columns: 1.1fr 0.9fr; }
+
+/* cột trái — branding + visual 3D */
+.auth-stage {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--space-xl); padding: var(--space-2xl) var(--space-xl);
+  border-right: 1px solid var(--border); overflow: hidden;
+}
+
+/* cột phải — form đăng nhập */
+.auth-col { display: grid; place-items: center; padding: var(--space-xl) var(--space-md); }
+.auth-card { width: 100%; max-width: 400px; padding: var(--space-xl) var(--space-lg); position: relative; }
+
+/* logo nhỏ trên card — chỉ hiện ở mobile (khi cột trái bị ẩn) */
+.auth-card-logo { display: none; width: 56px; height: 56px; margin: 0 auto var(--space-md); }
+
+/* tabs */
+.auth-tabs { display: flex; gap: 4px; margin-bottom: var(--space-lg); background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 4px; }
+.auth-tab { flex: 1; padding: 10px 14px; border-radius: 999px; font-weight: 600; font-size: 0.9rem; cursor: pointer; color: var(--text-muted); background: transparent; border: 0; font-family: inherit; transition: background 0.2s ease, color 0.2s ease; }
+.auth-tab.active { background: var(--grad-login); color: #fff; }
+
+.auth-title { font-size: 1.4rem; margin-bottom: 6px; }
+.auth-sub { color: var(--text-muted); font-size: 0.88rem; margin-bottom: var(--space-lg); }
+
+/* fields */
+.auth-field { margin-bottom: var(--space-md); position: relative; }
+.auth-field label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 6px; }
+.auth-field input {
+  width: 100%; padding: 12px 14px; border-radius: 10px;
+  background: var(--bg-2); border: 1px solid var(--border); color: var(--text);
+  font-family: inherit; font-size: 16px;          /* ≥16px: iOS không tự zoom */
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.auth-field input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+.auth-field.has-toggle input { padding-right: 46px; }
+.auth-toggle {
+  position: absolute; right: 6px; bottom: 6px; width: 32px; height: 32px; border-radius: 8px;
+  display: grid; place-items: center; cursor: pointer; color: var(--text-muted);
+  background: transparent; border: 0; transition: color 0.2s ease, background 0.2s ease;
+}
+.auth-toggle:hover { color: var(--text); background: var(--surface-strong); }
+
+.auth-err { color: var(--status-fault); font-size: 0.84rem; min-height: 1.1em; margin-bottom: var(--space-sm); }
+.auth-ok { color: var(--status-ok); font-size: 0.84rem; min-height: 1.1em; margin-bottom: var(--space-sm); }
+.auth-config-warn {
+  background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5; padding: 12px 14px; border-radius: 10px; font-size: 0.84rem; margin-bottom: var(--space-md);
+}
+
+.auth-btn { width: 100%; justify-content: center; background: var(--grad-login); box-shadow: 0 8px 24px rgba(46,134,193,.40); }
+.auth-btn:hover { box-shadow: 0 10px 34px rgba(30,132,73,.50), 0 0 0 4px rgba(46,134,193,.14); }
+.auth-foot { margin-top: var(--space-lg); text-align: center; font-size: 0.84rem; color: var(--text-muted); }
+.auth-foot button { color: var(--accent); font-weight: 600; cursor: pointer; background: none; border: 0; font-family: inherit; font-size: inherit; }
+.auth-foot button:hover { text-decoration: underline; }
+
+/* ===================== PROFILE ===================== */
+.profile-wrap { min-height: 100vh; display: grid; place-items: center; padding: var(--space-xl) var(--space-md); }
+.profile-card { width: 100%; max-width: 480px; padding: var(--space-xl) var(--space-lg); }
+.profile-back { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 0.85rem; margin-bottom: var(--space-lg); cursor: pointer; }
+.profile-back:hover { color: var(--text); }
+
+/* PHẦN 1 — thông tin (căn giữa, ngăn cách phần sửa bằng border) */
+.profile-head {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: 4px; padding-bottom: var(--space-lg); margin-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--border);
+}
+.avatar-ring { width: 112px; height: 112px; border-radius: 50%; padding: 3px; background: var(--grad); margin: 0 auto var(--space-sm); position: relative; box-shadow: 0 10px 30px rgba(37,99,235,.30); }
+.avatar-ring img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: var(--bg-2); border: 2px solid var(--bg); display: block; }
+.avatar-pick { position: absolute; right: 2px; bottom: 2px; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--bg); border: 1px solid var(--border); color: var(--text); cursor: pointer; transition: background 0.2s ease, transform 0.2s ease; }
+.avatar-pick:hover { background: var(--surface-strong); transform: scale(1.06); }
+.avatar-pick input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.profile-head .auth-title { margin-top: var(--space-xs); }
+
+.profile-email { text-align: center; color: var(--text-muted); font-size: 0.88rem; word-break: break-all; }
+
+/* PHẦN 2 — chỉnh sửa */
+.profile-edit { display: flex; flex-direction: column; }
+.profile-row { margin-bottom: var(--space-md); }
+.profile-row label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
+.profile-row input { width: 100%; padding: 12px 14px; border-radius: 10px; background: var(--bg-2); border: 1px solid var(--border); color: var(--text); font-family: inherit; font-size: 16px; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+.profile-row input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+
+.profile-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: var(--space-lg); }
+.profile-actions .btn { flex: 1; justify-content: center; min-width: 130px; }
+.btn-danger { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.35); }
+
+.profile-divider { height: 1px; background: var(--border); margin: var(--space-lg) 0; }
+
+/* toast (login/profile không tải dashboard.css nên tự định nghĩa) */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--grad-login); color: #fff; padding: 12px 22px; border-radius: 999px; font-weight: 600; font-size: 0.86rem; box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease; z-index: 9999; max-width: 90vw; text-align: center; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ===================== NỀN ORB (chiều sâu, trang trí) =====================
+   Copy rút gọn từ dashboard.css (2 orb, không parallax). */
+.bg-orbs { position: fixed; inset: 0; z-index: -2; overflow: hidden; pointer-events: none; }
+.orb { position: absolute; border-radius: 50%; filter: blur(75px); opacity: var(--orb-op); }
+.orb-1 { width: 440px; height: 440px; background: radial-gradient(circle, rgba(37,99,235,.9), transparent 70%); top: -90px; right: -70px; animation: floatA 17s ease-in-out infinite; }
+.orb-2 { width: 380px; height: 380px; background: radial-gradient(circle, rgba(34,211,238,.8), transparent 70%); bottom: 8%; left: -90px; animation: floatB 21s ease-in-out infinite; }
+@keyframes floatA { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-50px,60px) scale(1.1); } }
+@keyframes floatB { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(60px,-40px) scale(1.08); } }
+
+/* ===================== BRANDING (cột trái) ===================== */
+.auth-brand { display: flex; align-items: center; gap: 12px; }
+.auth-brand-logo { width: 44px; height: 44px; }
+.auth-brand-name {
+  font-size: 1.7rem; font-weight: 800; letter-spacing: -0.02em;
+  background: var(--grad-login); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.auth-stage-copy { text-align: center; max-width: 360px; }
+.auth-stage-copy h2 { font-size: 1.15rem; margin-bottom: 8px; }
+.auth-stage-copy p { color: var(--text-muted); font-size: 0.9rem; }
+
+/* ===================== VISUAL 3D (ảnh GIF động) =====================
+   Thay cho cube CSS-3D (gặp bug flatten, rườm rà). GIF từ Dribbble CDN —
+   referrerpolicy=no-referrer + onerror ẩn nếu bị hotlink-block (giống pattern gallery). */
+.auth-3d { width: 260px; max-width: 78%; position: relative; display: grid; place-items: center; }
+.auth-3d::before {
+  content: ""; position: absolute; width: 115%; height: 115%; border-radius: 50%;
+  background: radial-gradient(circle, var(--hero-glow), transparent 70%);
+  filter: blur(30px); z-index: 0; pointer-events: none;
+}
+.auth-3d img {
+  position: relative; z-index: 1; width: 100%; height: auto; display: block;
+  border-radius: 18px;
+  box-shadow: 0 22px 44px rgba(37,99,235,.30), 0 0 0 1px var(--border);
+}
+
+/* ===================== ENTRANCE (load-in — login là above-the-fold, không dùng .reveal) ===================== */
+@keyframes authIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+.auth-stage { animation: authIn .7s ease both; }
+.auth-card { animation: authIn .7s ease both; animation-delay: .15s; }
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 900px) {
+  .auth-split { grid-template-columns: 1fr; }
+  .auth-stage { display: none; }            /* mobile: ẩn cột trái */
+  .auth-card-logo { display: block; }       /* hiện logo nhỏ trên card */
+}
+@media (max-width: 420px) {
+  .auth-card, .profile-card { padding: var(--space-lg) var(--space-md); }
+  .auth-tools { top: 12px; right: 12px; }
+}
+
+/* ===================== ACCESSIBILITY: giảm motion ===================== */
+@media (prefers-reduced-motion: reduce) {
+  .orb, .auth-stage, .auth-card { animation: none !important; }
+}

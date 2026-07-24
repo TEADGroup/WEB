@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Quản trị dự án — TEA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Styles: base (chung) → admin (riêng, override tokens cho gọn) -->
+  <link rel="stylesheet" href="assets/css/base.css?v=20260711" />
+  <link rel="stylesheet" href="assets/css/admin.css?v=20260711" />
+</head>
+<body>
+
+  <!-- ===================== LOGIN ===================== -->
+  <div id="login">
+    <form class="login-card glass" id="loginForm" autocomplete="off">
+      <h1>Quản trị dự án</h1>
+      <p class="sub">Nhập mật khẩu để tiếp tục</p>
+      <input type="password" id="pw" placeholder="Mật khẩu" autofocus />
+      <div class="login-err" id="loginErr"></div>
+      <button class="btn btn-primary" type="submit">Vào trang quản trị →</button>
+      <p class="login-note">Đây là cổng mật khẩu phía trình duyệt — <b>không bảo mật tuyệt đối</b> (ai xem mã nguồn trang này vẫn vào được). Chỉ dùng để rào người dùng thông thường.</p>
+    </form>
+  </div>
+
+  <!-- ===================== EDITOR ===================== -->
+  <div id="editor">
+    <div class="wrap">
+      <div class="topbar">
+        <div>
+          <h1>Quản trị dự án</h1>
+          <small>Sửa tree "Các dự án đã thực hiện" · Lưu vào thư mục <code>data/</code> rồi commit GitHub để web cập nhật</small>
+        </div>
+        <button class="icon-btn" id="themeBtn" title="Sáng / Tối" aria-label="Toggle theme"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+      </div>
+      <div class="toolbar">
+        <button class="btn btn-primary btn-sm" id="addCat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Thêm lĩnh vực</button>
+        <button class="btn btn-ghost btn-sm" id="logout"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Đăng xuất</button>
+      </div>
+      <div id="catList"></div>
+      <div class="savewrap">
+        <button class="btn btn-primary" id="saveFolder"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Lưu vào thư mục (Chrome/Edge)</button>
+        <button class="btn btn-ghost" id="saveDownload"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Tải dữ liệu về</button>
+        <span class="hint">Sau khi lưu → mở terminal/git, <b>commit + push</b> thư mục <code>data/</code> lên GitHub thì web mới cập nhật.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- Scripts: theme (chung) → dữ liệu → admin (riêng) -->
+  <script src="assets/js/theme.js"></script>
+  <script src="data/projects-data.js"></script>
+  <script src="assets/js/admin.js?v=20260711"></script>
+</body>
+</html>

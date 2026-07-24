@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Giám sát nhà máy — TEA Smart Factory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Styles: base (chung) → dashboard (riêng). Dashboard ở thư mục con → dùng ../ -->
+  <link rel="stylesheet" href="../assets/css/base.css?v=20260711" />
+  <link rel="stylesheet" href="../assets/css/dashboard.css?v=20260714" />
+</head>
+<body>
+  <div class="bg-orbs" aria-hidden="true"><span class="orb orb-1"></span><span class="orb orb-2"></span></div>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="top">
+    <div class="container top-inner">
+      <a href="../index.html" class="brand" aria-label="TEA">
+        <img src="../logo.png" alt="Logo TEA" referrerpolicy="no-referrer" onerror="this.style.display='none'" />
+        <span>TEA<span class="grad-text">·</span>
+          <small data-vi="Giám sát nhà máy" data-en="Factory Monitor">Giám sát nhà máy</small>
+        </span>
+      </a>
+      <span class="live" id="liveWrap">
+        <span class="live-dot"></span>
+        <span id="liveText">TRỰC TUYẾN</span>
+      </span>
+      <span id="clock">--:--:--</span>
+      <div class="top-spacer"></div>
+      <div class="top-actions">
+        <button class="btn btn-ghost btn-sm" id="pauseBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg> <span id="pauseLbl">Tạm dừng</span></button>
+        <a class="user-chip" href="../profile.html" id="userChip" aria-label="Hồ sơ / Profile" title="Hồ sơ tài khoản">
+          <img id="userAvatar" src="" alt="" width="28" height="28" />
+        </a>
+        <!-- dropdown: Thông tin + Đăng xuất (hiện khi nhấn avatar) -->
+        <div class="user-menu" style="border-color: red; color: red;" id="userMenu" role="menu">
+          <a class="user-menu-item" id="userName"></a>
+          <a class="user-menu-item" href="../profile.html" role="menuitem" data-vi="Thông tin" data-en="Profile">Thông tin</a>
+          <button class="user-menu-item signout" type="button" id="userMenuSignout" role="menuitem" data-vi="Đăng xuất" data-en="Sign out">Đăng xuất</button>
+          <div style="display: flex; gap: 10px;">
+            <button class="icon-btn" id="langBtn" aria-label="Language" title="Ngôn ngữ / Language">EN</button>
+            <button class="icon-btn" id="themeBtn" title="Sáng / Tối" aria-label="Toggle theme"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+          </div>
+        </div>
+        
+        <a class="icon-btn" href="../index.html" id="homeBtn" aria-label="Home" title="Về trang chủ / Home">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </a>
+
+      </div>
+    </div>
+  </header>
+
+  <main class="container auth-pending">
+    <!-- CONTROL BAR -->
+    <section class="dash ctrl glass load-1">
+      <div class="ctrl-group">
+        <label data-vi="Ngưỡng cảnh báo" data-en="Warning threshold">Ngưỡng cảnh báo</label>
+        <input type="number" id="warnIn" min="40" max="100" value="76" />°C
+      </div>
+      <div class="ctrl-group">
+        <label data-vi="Ngưỡng sự cố" data-en="Fault threshold">Ngưỡng sự cố</label>
+        <input type="number" id="faultIn" min="50" max="110" value="86" />°C
+      </div>
+      <div class="top-spacer" style="margin:0;"></div>
+      <button class="btn btn-primary btn-sm" id="startAll"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg> <span data-vi="Khởi động tất cả" data-en="Start all">Khởi động tất cả</span></button>
+      <button class="btn btn-ghost btn-sm" id="stopAll"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2"/></svg> <span data-vi="Dừng tất cả" data-en="Stop all">Dừng tất cả</span></button>
+      <button class="btn btn-ghost btn-sm" id="reportBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> <span data-vi="Báo cáo" data-en="Report">Báo cáo</span></button>
+    </section>
+
+    <!-- KPI -->
+    <section class="dash kpi-row load-2">
+      <div class="kpi glass">
+        <div class="kpi-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg></div>
+        <div class="kpi-num"><span id="kTemp">--</span><small>°C</small></div>
+        <div class="kpi-label" data-vi="Nhiệt độ trung bình" data-en="Avg temperature">Nhiệt độ trung bình</div>
+      </div>
+      <div class="kpi glass">
+        <div class="kpi-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg></div>
+        <div class="kpi-num"><span id="kDev">--</span><small data-vi="/ 8 thiết bị" data-en="/ 8 devices">/ 8 thiết bị</small></div>
+        <div class="kpi-label" data-vi="Thiết bị đang chạy" data-en="Devices running">Thiết bị đang chạy</div>
+      </div>
+      <div class="kpi glass">
+        <div class="kpi-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+        <div class="kpi-num"><span id="kPow">--</span><small>kW</small></div>
+        <div class="kpi-label" data-vi="Công suất tiêu thụ" data-en="Power consumption">Công suất tiêu thụ</div>
+      </div>
+      <div class="kpi glass">
+        <div class="kpi-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <div class="kpi-num"><span id="kOee">--</span><small>%</small></div>
+        <div class="kpi-label" data-vi="Hiệu suất (OEE)" data-en="Efficiency (OEE)">Hiệu suất (OEE)</div>
+      </div>
+      <div class="kpi glass">
+        <div class="kpi-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <div class="kpi-num"><span id="kAlert">--</span></div>
+        <div class="kpi-label" data-vi="Cảnh báo chưa xử lý" data-en="Unacknowledged alerts">Cảnh báo chưa xử lý</div>
+      </div>
+    </section>
+
+    <!-- TRENDS -->
+    <section class="dash reveal">
+      <div class="sec-head">
+        <span class="eyebrow" data-vi="Xu hướng" data-en="Trends">Xu hướng</span>
+        <h2 data-vi="Diễn biến thời gian thực" data-en="Real-time trends">Diễn biến thời gian thực</h2>
+        <span class="hint" data-vi="Cập nhật mỗi 1 giây" data-en="Updates every 1 second">Cập nhật mỗi 1 giây</span>
+      </div>
+      <div class="trend-grid">
+        <div class="chart-card glass">
+          <div class="ch-top">
+            <h3 data-vi="Nhiệt độ theo khu vực (60s)" data-en="Temperature by zone (60s)">Nhiệt độ theo khu vực (60s)</h3>
+          </div>
+          <div class="legend" id="legend"></div>
+          <canvas class="chart" id="chartTemp"></canvas>
+        </div>
+        <div class="chart-card glass">
+          <div class="ch-top">
+            <h3 data-vi="Công suất (kW)" data-en="Power (kW)">Công suất (kW)</h3>
+            <span class="ch-now" id="powNow">-- kW</span>
+          </div>
+          <canvas class="chart" id="chartPower"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEVICES -->
+    <section class="dash reveal">
+      <div class="sec-head">
+        <span class="eyebrow" data-vi="Thiết bị" data-en="Devices">Thiết bị</span>
+        <h2 data-vi="Thiết bị trong nhà máy" data-en="Plant devices">Thiết bị trong nhà máy</h2>
+        <span class="hint" data-vi="Bấm công tắc để bật/tắt" data-en="Toggle switch to start/stop">Bấm công tắc để bật/tắt</span>
+      </div>
+      <div class="device-grid" id="deviceGrid"></div>
+    </section>
+
+    <!-- ALERTS -->
+    <section class="dash reveal">
+      <div class="sec-head">
+        <span class="eyebrow" data-vi="Sự kiện" data-en="Events">Sự kiện</span>
+        <h2 data-vi="Sự kiện gần đây" data-en="Recent events">Sự kiện gần đây</h2>
+      </div>
+      <div class="alerts-card glass">
+        <div class="alert-filter">
+          <button id="fAll" class="active" data-vi="Tất cả" data-en="All">Tất cả</button>
+          <button id="fUnack" data-vi="Chưa xác nhận" data-en="Unacknowledged">Chưa xác nhận</button>
+        </div>
+        <div class="alert-list" id="alertList"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="chartTip" aria-hidden="true"></div>
+
+  <footer>
+    <div class="container foot-inner">
+      <div>
+        <a class="btn btn-ghost btn-sm" href="../index.html">← <span data-vi="Về trang chủ" data-en="Back to home">Về trang chủ</span></a>
+      </div>
+      <small data-vi="© 2026 TEA · Dữ liệu được mô phỏng để minh hoạ." data-en="© 2026 TEA · Simulated data for demonstration.">© 2026 TEA · Dữ liệu được mô phỏng để minh hoạ.</small>
+    </div>
+  </footer>
+
+  <!-- ===================== REPORT OVERLAY ===================== -->
+  <dialog id="reportOverlay" class="rpt-overlay" aria-labelledby="reportTitle">
+    <div class="rpt-card">
+      <!-- Toolbar (ẩn khi in) -->
+      <div class="rpt-toolbar no-print">
+        <div class="rpt-presets">
+          <button class="btn btn-ghost btn-sm rpt-preset active" data-preset="today" data-vi="Hôm nay" data-en="Today">Hôm nay</button>
+          <button class="btn btn-ghost btn-sm rpt-preset" data-preset="yesterday" data-vi="Hôm qua" data-en="Yesterday">Hôm qua</button>
+          <button class="btn btn-ghost btn-sm rpt-preset" data-preset="7" data-vi="7 ngày" data-en="7 days">7 ngày</button>
+          <button class="btn btn-ghost btn-sm rpt-preset" data-preset="30" data-vi="30 ngày" data-en="30 days">30 ngày</button>
+        </div>
+        <div class="rpt-range">
+          <label data-vi="Từ ngày" data-en="From">Từ ngày</label>
+          <input type="date" id="rptFrom" />
+          <label data-vi="Đến ngày" data-en="To">Đến ngày</label>
+          <input type="date" id="rptTo" />
+          <button class="btn btn-primary btn-sm" id="rptGen" data-vi="Tạo báo cáo" data-en="Generate">Tạo báo cáo</button>
+        </div>
+        <div class="rpt-actions">
+          <button class="btn btn-ghost btn-sm" id="rptPrint"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg> <span data-vi="In / PDF" data-en="Print / PDF">In / PDF</span></button>
+          <button class="btn btn-ghost btn-sm" id="rptCsv"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> <span data-vi="Tải CSV" data-en="Download CSV">Tải CSV</span></button>
+          <button class="btn btn-ghost btn-sm" id="rptXlsx"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> <span data-vi="Excel" data-en="Excel">Excel</span></button>
+          <button class="icon-btn rpt-close" id="rptClose" aria-label="Đóng">×</button>
+        </div>
+      </div>
+
+      <!-- Report body -->
+      <div class="rpt-body" id="rptBody">
+        <div class="rpt-head">
+          <div>
+            <span class="eyebrow" data-vi="Báo cáo giám sát" data-en="Monitoring report">Báo cáo giám sát</span>
+            <h2 id="reportTitle" data-vi="Báo cáo nhiệt độ nhà máy" data-en="Plant temperature report">Báo cáo nhiệt độ nhà máy</h2>
+          </div>
+          <div class="rpt-meta">
+            <div><span class="rpt-meta-k" data-vi="Kỳ báo cáo" data-en="Period">Kỳ báo cáo</span><span class="rpt-meta-v" id="rptPeriod">—</span></div>
+            <div><span class="rpt-meta-k" data-vi="Sinh lúc" data-en="Generated">Sinh lúc</span><span class="rpt-meta-v" id="rptGenAt">—</span></div>
+          </div>
+        </div>
+
+        <div class="kpi-row" id="rptKpi"></div>
+
+        <div class="rpt-sec">
+          <h3 data-vi="Xu hướng nhiệt độ" data-en="Temperature trend">Xu hướng nhiệt độ</h3>
+          <div class="legend" id="rptLegend"></div>
+          <canvas class="chart rpt-canvas" id="rptTemp"></canvas>
+        </div>
+
+        <div class="rpt-sec">
+          <h3 data-vi="Xu hướng công suất" data-en="Power trend">Xu hướng công suất</h3>
+          <canvas class="chart rpt-canvas" id="rptPower"></canvas>
+        </div>
+
+        <div class="rpt-sec">
+          <h3 data-vi="Cảnh báo nhiệt độ" data-en="Temperature warnings">Cảnh báo nhiệt độ</h3>
+          <div class="rpt-table-scroll">
+            <table class="rpt-table" id="rptWarnTable"></table>
+          </div>
+        </div>
+
+        <div class="rpt-sec">
+          <h3 data-vi="Tóm tắt theo thiết bị" data-en="Per-device summary">Tóm tắt theo thiết bị</h3>
+          <div class="rpt-table-scroll">
+            <table class="rpt-table" id="rptDevTable"></table>
+          </div>
+        </div>
+
+        <p class="rpt-note" data-vi="* Dữ liệu được mô phỏng để minh hoạ. Ngưỡng cảnh báo / sự cố lấy theo thiết lập hiện tại ở thanh điều khiển." data-en="* Simulated data for demonstration. Warning / fault thresholds use the current control-bar settings.">* Dữ liệu được mô phỏng để minh hoạ. Ngưỡng cảnh báo / sự cố lấy theo thiết lập hiện tại ở thanh điều khiển.</p>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- Scripts: theme + i18n (chung) → dashboard (riêng). Thư mục con → ../ -->
+  <script src="../assets/js/vendor/jszip.min.js?v=20260709d"></script>
+  <script src="../assets/js/theme.js?v=20260709d"></script>
+  <script src="../assets/js/i18n.js?v=20260709d"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../assets/js/supabase-config.js?v=20260711"></script>
+  <script src="../assets/js/auth.js?v=20260711"></script>
+  <script src="../assets/js/dashboard.js?v=20260715"></script>
+</body>
+</html>

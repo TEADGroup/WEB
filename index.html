@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Công Ty TNHH Điện Và Tự Động TEA — Chuyên lập trình PLC, tích hợp Protocol công nghiệp (Modbus, OPC UA, MQTT, Profinet, EtherCAT), SCADA/HMI, IoT & Cloud." />
+  <title>TEA — Điện & Tự Động Hóa | PLC & Protocol Solutions</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Styles: base (chung) → main (riêng trang này) -->
+  <link rel="stylesheet" href="assets/css/base.css?v=20260711" />
+  <link rel="stylesheet" href="assets/css/main.css?v=20260711" />
+</head>
+<body>
+
+  <!-- nền động -->
+  <div class="bg-orbs" aria-hidden="true">
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
+    <span class="orb orb-3"></span>
+  </div>
+  <!-- thanh tiến trình cuộn -->
+  <div class="scroll-progress" id="scrollProgress"></div>
+
+  <!-- ===================== NAVBAR ===================== -->
+  <header class="nav" id="nav">
+    <div class="container nav-inner">
+      <a href="#home" class="logo" aria-label="TEA">
+        <img src="logo.png" alt="Logo TEA" class="logo-img" />
+        <span>
+          TEA
+          <small data-vi="Điện &amp; Tự Động Hóa" data-en="Electric &amp; Automation">Điện &amp; Tự Động Hóa</small>
+        </span>
+      </a>
+
+      <nav>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#home" class="active" data-vi="Trang chủ" data-en="Home">Trang chủ</a></li>
+          <li><a href="#about" data-vi="Về chúng tôi" data-en="About">Về chúng tôi</a></li>
+          <li><a href="#services" data-vi="Dịch vụ" data-en="Services">Dịch vụ</a></li>
+          <li><a href="#protocols" data-vi="Giao thức" data-en="Protocols">Giao thức</a></li>
+          <li><a href="#showcase" data-vi="Hình ảnh" data-en="Gallery">Hình ảnh</a></li>
+          <li><a href="#projects" data-vi="Dự án" data-en="Projects">Dự án</a></li>
+          <li><a href="#contact" data-vi="Liên hệ" data-en="Contact">Liên hệ</a></li>
+          <!-- Chỉ hiện trong menu mobile (desktop dùng icon ở nav-actions) -->
+          <li class="nav-mobile-only"><a href="admin.html" data-vi="Quản trị" data-en="Admin">Quản trị</a></li>
+          <li class="nav-mobile-only"><a href="dashboard/index.html" data-vi="Dashboard" data-en="Dashboard">Dashboard</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="icon-btn lang-btn" id="langBtn" aria-label="Switch language" title="Ngôn ngữ / Language">
+          <span id="langLabel">EN</span>
+        </button>
+        <button class="icon-btn" id="themeBtn" aria-label="Toggle theme" title="Sáng / Tối">
+          <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <a href="admin.html" class="icon-btn" id="adminBtn" aria-label="Đăng nhập quản trị / Admin login" title="Đăng nhập quản trị / Admin login">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </a>
+        <a href="dashboard/index.html" class="icon-btn" id="dashBtn" aria-label="Dashboard giám sát / Live dashboard" title="Dashboard giám sát / Live dashboard">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </a>
+        <button class="icon-btn hamburger" id="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="navLinks">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero" id="home">
+    <div class="container">
+      <div class="hero-card glass">
+        <span class="hero-badge">
+          <span class="dot"></span>
+          <span data-vi="Chuyên gia Tự động hóa Công nghiệp" data-en="Industrial Automation Expert">Chuyên gia Tự động hóa Công nghiệp</span>
+        </span>
+        <h1>
+          <span data-vi="Giải pháp " data-en="Smart ">Giải pháp </span>
+          <span class="shimmer" data-vi="PLC &amp; Protocol" data-en="PLC &amp; Protocol">PLC &amp; Protocol</span>
+          <br />
+          <span data-vi="thông minh cho công nghiệp" data-en="solutions for industry">thông minh cho công nghiệp</span>
+        </h1>
+        <p class="lead" data-vi="Công Ty TNHH Điện Và Tự Động TEA — Thiết kế, lập trình và tích hợp hệ thống điều khiển tự động với đa dạng PLC và giao thức công nghiệp, giúp nhà máy của bạn vận hành thông minh &amp; hiệu quả hơn." data-en="TEA Electric &amp; Automation Co., Ltd — We design, program and integrate automation control systems across many PLCs and industrial protocols, making your plant smarter and more efficient.">
+          Công Ty TNHH Điện Và Tự Động TEA — Thiết kế, lập trình và tích hợp hệ thống điều khiển tự động với đa dạng PLC và giao thức công nghiệp, giúp nhà máy của bạn vận hành thông minh &amp; hiệu quả hơn.
+        </p>
+        <div class="hero-cta">
+          <a href="#services" class="btn btn-primary">
+            <span data-vi="Khám phá dịch vụ" data-en="Explore services">Khám phá dịch vụ</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a href="#contact" class="btn btn-ghost" data-vi="Liên hệ tư vấn" data-en="Contact us">Liên hệ tư vấn</a>
+        </div>
+
+        <div class="hero-orbit">
+          <span class="chip">Siemens</span>
+          <span class="chip">Allen-Bradley</span>
+          <span class="chip">Mitsubishi</span>
+          <span class="chip">Delta</span>
+          <span class="chip">Omron</span>
+          <span class="chip">Schneider</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ABOUT + STATS ===================== -->
+  <section id="about">
+    <div class="container">
+      <div class="reveal from-left">
+        <span class="eyebrow" data-vi="Về chúng tôi" data-en="About Us">Về chúng tôi</span>
+        <h2 class="section-title" data-vi="Đối tác tin cậy trong tự động hóa" data-en="Your trusted automation partner">Đối tác tin cậy trong tự động hóa</h2>
+        <p class="section-sub" data-vi="Với hơn một thập kỷ kinh nghiệm, TEA mang đến các giải pháp điện và tự động hóa trọn gói — từ tư vấn, lập trình PLC, kết nối Protocol đến triển khai SCADA/HMI và hệ thống IoT." data-en="With over a decade of experience, TEA delivers end-to-end electrical and automation solutions — from consulting and PLC programming to protocol integration, SCADA/HMI and IoT systems.">
+          Với hơn một thập kỷ kinh nghiệm, TEA mang đến các giải pháp điện và tự động hóa trọn gói — từ tư vấn, lập trình PLC, kết nối Protocol đến triển khai SCADA/HMI và hệ thống IoT.
+        </p>
+      </div>
+
+      <div class="stats reveal">
+        <div class="stat glass">
+          <div class="num grad-text"><span class="counter" data-target="10">0</span>+</div>
+          <div class="label" data-vi="Năm kinh nghiệm" data-en="Years of experience">Năm kinh nghiệm</div>
+        </div>
+        <div class="stat glass">
+          <div class="num grad-text"><span class="counter" data-target="250">0</span>+</div>
+          <div class="label" data-vi="Dự án hoàn thành" data-en="Projects completed">Dự án hoàn thành</div>
+        </div>
+        <div class="stat glass">
+          <div class="num grad-text"><span class="counter" data-target="80">0</span>+</div>
+          <div class="label" data-vi="Khách hàng tin dùng" data-en="Trusted clients">Khách hàng tin dùng</div>
+        </div>
+        <div class="stat glass">
+          <div class="num grad-text"><span class="counter" data-target="15000">0</span>+</div>
+          <div class="label" data-vi="Thiết bị đã kết nối" data-en="Devices connected">Thiết bị đã kết nối</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SERVICES ===================== -->
+  <section id="services">
+    <div class="container">
+      <div class="reveal from-right">
+        <span class="eyebrow" data-vi="Dịch vụ" data-en="Services">Dịch vụ</span>
+        <h2 class="section-title" data-vi="Giải pháp công nghệ toàn diện" data-en="Comprehensive tech solutions">Giải pháp công nghệ toàn diện</h2>
+        <p class="section-sub" data-vi="Từ cấp độ thiết bị đến hệ thống — chúng tôi bao phủ trọn vẹn chuỗi tự động hóa của bạn." data-en="From device level to full systems — we cover your entire automation chain.">
+          Từ cấp độ thiết bị đến hệ thống — chúng tôi bao phủ trọn vẹn chuỗi tự động hóa của bạn.
+        </p>
+      </div>
+
+      <div class="grid-3">
+        <div class="service-card glass reveal">
+          <div class="service-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="2" x2="9" y2="4"/><line x1="15" y1="2" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="22"/><line x1="15" y1="20" x2="15" y2="22"/><line x1="20" y1="9" x2="22" y2="9"/><line x1="20" y1="14" x2="22" y2="14"/><line x1="2" y1="9" x2="4" y2="9"/><line x1="2" y1="14" x2="4" y2="14"/></svg></div>
+          <h3 data-vi="Lập trình PLC" data-en="PLC Programming">Lập trình PLC</h3>
+          <p data-vi="Lập trình, cấu hình và tối ưu PLC các hãng: Siemens, Allen-Bradley, Mitsubishi, Delta, Omron, Schneider." data-en="Programming, configuration and optimization of PLCs from Siemens, Allen-Bradley, Mitsubishi, Delta, Omron, Schneider.">Lập trình, cấu hình và tối ưu PLC các hãng: Siemens, Allen-Bradley, Mitsubishi, Delta, Omron, Schneider.</p>
+        </div>
+
+        <div class="service-card glass reveal">
+          <div class="service-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg></div>
+          <h3 data-vi="Tích hợp Protocol" data-en="Protocol Integration">Tích hợp Protocol</h3>
+          <p data-vi="Kết nối đa thiết bị qua Modbus, OPC UA, MQTT, Profinet, EtherCAT, EtherNet/IP, CANopen, BACnet." data-en="Connect devices across Modbus, OPC UA, MQTT, Profinet, EtherCAT, EtherNet/IP, CANopen, BACnet.">Kết nối đa thiết bị qua Modbus, OPC UA, MQTT, Profinet, EtherCAT, EtherNet/IP, CANopen, BACnet.</p>
+        </div>
+
+        <div class="service-card glass reveal">
+          <div class="service-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+          <h3 data-vi="SCADA &amp; HMI" data-en="SCADA &amp; HMI">SCADA &amp; HMI</h3>
+          <p data-vi="Xây dựng màn hình giám sát (HMI) và hệ thống SCADA trực quan, theo dõi &amp; điều khiển từ xa theo thời gian thực." data-en="Building intuitive HMI screens and SCADA systems for real-time monitoring and remote control.">Xây dựng màn hình giám sát (HMI) và hệ thống SCADA trực quan, theo dõi &amp; điều khiển từ xa theo thời gian thực.</p>
+        </div>
+
+        <div class="service-card glass reveal">
+          <div class="service-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg></div>
+          <h3 data-vi="IoT &amp; Cloud" data-en="IoT &amp; Cloud">IoT &amp; Cloud</h3>
+          <p data-vi="Thu thập dữ liệu thiết bị, đẩy lên Cloud và xây dựng dashboard phân tích — nền tảng Công nghiệp 4.0." data-en="Collect device data, push to the cloud and build analytics dashboards — your Industry 4.0 foundation.">Thu thập dữ liệu thiết bị, đẩy lên Cloud và xây dựng dashboard phân tích — nền tảng Công nghiệp 4.0.</p>
+        </div>
+
+        <div class="service-card glass reveal">
+          <div class="service-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+          <h3 data-vi="Bảo trì &amp; Sửa chữa" data-en="Maintenance &amp; Repair">Bảo trì &amp; Sửa chữa</h3>
+          <p data-vi="Dịch vụ bảo trì định kỳ, khắc phục sự cố và nâng cấp hệ thống đảm bảo vận hành ổn định 24/7." data-en="Scheduled maintenance, troubleshooting and system upgrades ensuring stable 24/7 operation.">Dịch vụ bảo trì định kỳ, khắc phục sự cố và nâng cấp hệ thống đảm bảo vận hành ổn định 24/7.</p>
+        </div>
+
+        <div class="service-card glass reveal">
+          <div class="service-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><polyline points="9 7 12 4 15 7"/><line x1="12" y1="4" x2="12" y2="16"/></svg></div>
+          <h3 data-vi="Tư vấn giải pháp" data-en="Solution Consulting">Tư vấn giải pháp</h3>
+          <p data-vi="Khảo sát, phân tích và thiết kế giải pháp tự động hóa phù hợp ngân sách và mục tiêu kinh doanh." data-en="Survey, analyze and design automation solutions that fit your budget and business goals.">Khảo sát, phân tích và thiết kế giải pháp tự động hóa phù hợp ngân sách và mục tiêu kinh doanh.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROTOCOLS ===================== -->
+  <section id="protocols">
+    <div class="container">
+      <div class="reveal from-up">
+        <span class="eyebrow" data-vi="Giao thức hỗ trợ" data-en="Supported Protocols">Giao thức hỗ trợ</span>
+        <h2 class="section-title" data-vi="Kết nối mọi thiết bị, mọi hệ thống" data-en="Connect every device, every system">Kết nối mọi thiết bị, mọi hệ thống</h2>
+        <p class="section-sub" data-vi="Chuyên môn sâu về các giao thức công nghiệp phổ biến — đảm bảo tương thích toàn diện." data-en="Deep expertise in mainstream industrial protocols — ensuring full compatibility.">
+          Chuyên môn sâu về các giao thức công nghiệp phổ biến — đảm bảo tương thích toàn diện.
+        </p>
+      </div>
+      <div class="protocol-row reveal">
+        <span class="protocol-badge">Modbus RTU/TCP</span>
+        <span class="protocol-badge">OPC UA</span>
+        <span class="protocol-badge">MQTT</span>
+        <span class="protocol-badge">Profinet</span>
+        <span class="protocol-badge">Profibus</span>
+        <span class="protocol-badge">EtherCAT</span>
+        <span class="protocol-badge">EtherNet/IP</span>
+        <span class="protocol-badge">CANopen</span>
+        <span class="protocol-badge">BACnet</span>
+        <span class="protocol-badge">IEC 61850</span>
+        <span class="protocol-badge">DNP3</span>
+        <span class="protocol-badge">HTTP / REST</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== GALLERY (ảnh automation) ===================== -->
+  <section id="showcase">
+    <div class="container">
+      <div class="reveal from-left">
+        <span class="eyebrow" data-vi="Hình ảnh thực tế" data-en="Gallery">Hình ảnh thực tế</span>
+        <h2 class="section-title" data-vi="Kỹ thuật &amp; tự động hóa trong hành động" data-en="Engineering &amp; automation in action">Kỹ thuật &amp; tự động hóa trong hành động</h2>
+        <p class="section-sub" data-vi="Một số hình ảnh về môi trường làm việc, hệ thống điều khiển và các dự án TEA đã triển khai." data-en="A look at our work environment, control systems and projects delivered by TEA.">
+          Một số hình ảnh về môi trường làm việc, hệ thống điều khiển và các dự án TEA đã triển khai.
+        </p>
+      </div>
+
+      <div class="gallery reveal">
+        <figure class="gallery-item tilt">
+          <img loading="lazy" decoding="async" referrerpolicy="no-referrer" alt="Kỹ sư vận hành hệ thống tự động"
+            src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80"
+            onerror="this.style.display='none'" />
+          <figcaption class="gallery-cap"><small data-vi="Vận hành" data-en="Operation">Vận hành</small><span data-vi="Giám sát &amp; vận hành hệ thống" data-en="System monitoring &amp; operation">Giám sát &amp; vận hành hệ thống</span></figcaption>
+        </figure>
+        <figure class="gallery-item tilt">
+          <img loading="lazy" decoding="async" referrerpolicy="no-referrer" alt="Thiết kế kỹ thuật trên màn hình"
+            src="https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=800&q=80"
+            onerror="this.style.display='none'" />
+          <figcaption class="gallery-cap"><small data-vi="Thiết kế" data-en="Design">Thiết kế</small><span data-vi="Tư vấn &amp; thiết kế giải pháp" data-en="Consulting &amp; solution design">Tư vấn &amp; thiết kế giải pháp</span></figcaption>
+        </figure>
+        <figure class="gallery-item tilt">
+          <img loading="lazy" decoding="async" referrerpolicy="no-referrer" alt="Bo mạch điều khiển"
+            src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80"
+            onerror="this.style.display='none'" />
+          <figcaption class="gallery-cap"><small data-vi="Phần cứng" data-en="Hardware">Phần cứng</small><span data-vi="Bo mạch &amp; phần cứng điều khiển" data-en="Control boards &amp; hardware">Bo mạch &amp; phần cứng điều khiển</span></figcaption>
+        </figure>
+        <figure class="gallery-item tilt">
+          <img loading="lazy" decoding="async" referrerpolicy="no-referrer" alt="Lắp ráp bo mạch"
+            src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&q=80"
+            onerror="this.style.display='none'" />
+          <figcaption class="gallery-cap"><small data-vi="Lắp ráp" data-en="Assembly">Lắp ráp</small><span data-vi="Lắp ráp &amp; kết nối thiết bị" data-en="Assembly &amp; wiring">Lắp ráp &amp; kết nối thiết bị</span></figcaption>
+        </figure>
+        <figure class="gallery-item tilt">
+          <img loading="lazy" decoding="async" referrerpolicy="no-referrer" alt="Kỹ sư khảo sát dự án"
+            src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&q=80"
+            onerror="this.style.display='none'" />
+          <figcaption class="gallery-cap"><small data-vi="Khảo sát" data-en="Survey">Khảo sát</small><span data-vi="Khảo sát &amp; triển khai dự án" data-en="Site survey &amp; deployment">Khảo sát &amp; triển khai dự án</span></figcaption>
+        </figure>
+        <figure class="gallery-item tilt">
+          <img loading="lazy" decoding="async" referrerpolicy="no-referrer" alt="Gia công sản xuất công nghiệp"
+            src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=800&q=80"
+            onerror="this.style.display='none'" />
+          <figcaption class="gallery-cap"><small data-vi="Sản xuất" data-en="Production">Sản xuất</small><span data-vi="Tự động hóa dây chuyền sản xuất" data-en="Production line automation">Tự động hóa dây chuyền sản xuất</span></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROJECTS (TREE + hover-ảnh) ===================== -->
+  <section id="projects">
+    <div class="container">
+      <div class="reveal from-right">
+        <span class="eyebrow" data-vi="Dự án tiêu biểu" data-en="Featured Projects">Dự án tiêu biểu</span>
+        <h2 class="section-title" data-vi="Các dự án đã thực hiện" data-en="Projects we've delivered">Các dự án đã thực hiện</h2>
+        <p class="section-sub" data-vi="Khám phá cây dự án — bấm vào từng lĩnh vực để xem chi tiết. rê chuột lên tên dự án để xem ảnh." data-en="Explore the project tree — click each domain to see details. Hover a project name to preview its photo.">
+          Khám phá cây dự án — bấm vào từng lĩnh vực để xem chi tiết. Rê chuột lên tên dự án để xem ảnh.
+        </p>
+      </div>
+
+      <div class="tree-toolbar reveal">
+        <button class="btn btn-ghost" id="expandAll" data-vi="Mở rộng tất cả" data-en="Expand all">Mở rộng tất cả</button>
+        <button class="btn btn-ghost" id="collapseAll" data-vi="Thu gọn tất cả" data-en="Collapse all">Thu gọn tất cả</button>
+      </div>
+
+      <div class="tree glass reveal" id="projectTree"><!-- render bằng JS --></div>
+    </div>
+    <div id="treeImgTip" aria-hidden="true"></div>
+  </section>
+
+  <!-- ===================== WHY US ===================== -->
+  <section id="why">
+    <div class="container">
+      <div class="reveal from-up">
+        <span class="eyebrow" data-vi="Tại sao chọn TEA" data-en="Why choose TEA">Tại sao chọn TEA</span>
+        <h2 class="section-title" data-vi="Cam kết chất lượng &amp; uy tín" data-en="Quality &amp; trust, committed">Cam kết chất lượng &amp; uy tín</h2>
+      </div>
+      <div class="grid-2">
+        <div class="feature glass reveal">
+          <div class="feature-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <div><h3 data-vi="Đội ngũ kỹ sư giàu kinh nghiệm" data-en="Experienced engineering team">Đội ngũ kỹ sư giàu kinh nghiệm</h3><p data-vi="Chứng chỉ quốc tế, nhiều năm thực chiến trong các nhà máy." data-en="Internationally certified, with years of hands-on plant experience.">Chứng chỉ quốc tế, nhiều năm thực chiến trong các nhà máy.</p></div>
+        </div>
+        <div class="feature glass reveal">
+          <div class="feature-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z"/></svg></div>
+          <div><h3 data-vi="Chuẩn quốc tế" data-en="International standards">Chuẩn quốc tế</h3><p data-vi="Tuân thủ IEC, ISA; quy trình kiểm thử nghiêm ngặt." data-en="Compliant with IEC, ISA; strict testing processes.">Tuân thủ IEC, ISA; quy trình kiểm thử nghiêm ngặt.</p></div>
+        </div>
+        <div class="feature glass reveal">
+          <div class="feature-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div><h3 data-vi="Hỗ trợ 24/7" data-en="24/7 Support">Hỗ trợ 24/7</h3><p data-vi="Đội ngũ sẵn sàng xử lý sự cố mọi lúc, giảm thiểu downtime." data-en="Always-on troubleshooting team to minimize downtime.">Đội ngũ sẵn sàng xử lý sự cố mọi lúc, giảm thiểu downtime.</p></div>
+        </div>
+        <div class="feature glass reveal">
+          <div class="feature-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+          <div><h3 data-vi="Giải pháp tùy chỉnh" data-en="Tailored solutions">Giải pháp tùy chỉnh</h3><p data-vi="Thiết kế riêng theo đặc thù ngành nghề và quy mô." data-en="Custom-designed for your industry and scale.">Thiết kế riêng theo đặc thù ngành nghề và quy mô.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CONTACT ===================== -->
+  <section id="contact">
+    <div class="container">
+      <div class="reveal from-left">
+        <span class="eyebrow" data-vi="Liên hệ" data-en="Contact">Liên hệ</span>
+        <h2 class="section-title" data-vi="Bắt đầu dự án cùng TEA" data-en="Start your project with TEA">Bắt đầu dự án cùng TEA</h2>
+        <p class="section-sub" data-vi="Hãy để lại thông tin — chuyên viên của chúng tôi sẽ liên hệ tư vấn miễn phí." data-en="Leave your details — our specialists will contact you for a free consultation.">
+          Hãy để lại thông tin — chuyên viên của chúng tôi sẽ liên hệ tư vấn miễn phí.
+        </p>
+      </div>
+
+      <div class="contact-grid">
+        <div class="contact-info glass reveal">
+          <h3 data-vi="Thông tin liên hệ" data-en="Contact information">Thông tin liên hệ</h3>
+          <div class="contact-line">
+            <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+            <span><small data-vi="Địa chỉ" data-en="Address">Địa chỉ</small><b data-vi="294/41/18 Đường Số 8, Phường Thông Tây Hôi, TP. Hồ Chí Minh" data-en="294/41/18 Street No. 8, Thong Tay Hoi Ward, Ho Chi Minh City">294/41/18 Đường Số 8, Phường Thông Tây Hôi, TP. Hồ Chí Minh</b></span>
+          </div>
+          <div class="contact-line">
+            <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+            <span><small data-vi="Điện thoại" data-en="Phone">Điện thoại</small><b>+84 387.981.930</b></span>
+          </div>
+          <div class="contact-line">
+            <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+            <span><small data-vi="Email" data-en="Email">Email</small><b>contact@teagroup.vn</b></span>
+          </div>
+          <div class="contact-line">
+            <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+            <span><small data-vi="Giờ làm việc" data-en="Working hours">Giờ làm việc</small><b data-vi="Thứ 2 – Thứ 7: 8:00 – 17:30" data-en="Mon – Sat: 8:00 – 17:30">Thứ 2 – Thứ 7: 8:00 – 17:30</b></span>
+          </div>
+        </div>
+
+        <form class="contact-form glass reveal" id="contactForm" novalidate>
+          <div class="form-group">
+            <label for="name" data-vi="Họ và tên" data-en="Full name">Họ và tên</label>
+            <input type="text" id="name" name="name" required data-ph-vi="Nguyễn Văn A" data-ph-en="John Doe" placeholder="Nguyễn Văn A" />
+          </div>
+          <div class="form-group">
+            <label for="email" data-vi="Email" data-en="Email">Email</label>
+            <input type="email" id="email" name="email" required data-ph-vi="ban@email.com" data-ph-en="you@email.com" placeholder="ban@email.com" />
+          </div>
+          <div class="form-group">
+            <label for="msg" data-vi="Nội dung" data-en="Message">Nội dung</label>
+            <textarea id="msg" name="msg" required data-ph-vi="Mô tả nhu cầu của bạn..." data-ph-en="Describe your needs..." placeholder="Mô tả nhu cầu của bạn..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;" data-vi="Gửi yêu cầu" data-en="Send request">Gửi yêu cầu</button>
+          <div class="form-msg" id="formMsg"></div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer>
+    <div class="container footer-inner">
+      <div>
+        <div class="logo" style="margin-bottom:6px;">
+          <img src="logo.png" alt="Logo TEA" class="footer-logo-img" />
+          <span style="font-size:1.05rem;">TEA</span>
+        </div>
+        <small data-vi="© 2026 Công Ty TNHH Điện Và Tự Động TEA. Bảo lưu mọi quyền." data-en="© 2026 TEA Electric &amp; Automation Co., Ltd. All rights reserved.">© 2026 Công Ty TNHH Điện Và Tự Động TEA. Bảo lưu mọi quyền.</small>
+      </div>
+      <div class="footer-links">
+        <a href="#services" data-vi="Dịch vụ" data-en="Services">Dịch vụ</a>
+        <a href="#showcase" data-vi="Hình ảnh" data-en="Gallery">Hình ảnh</a>
+        <a href="#projects" data-vi="Dự án" data-en="Projects">Dự án</a>
+        <a href="#contact" data-vi="Liên hệ" data-en="Contact">Liên hệ</a>
+        <a href="admin.html" data-vi="Quản trị" data-en="Admin">Quản trị</a>
+        <a href="dashboard/index.html" data-vi="Dashboard" data-en="Dashboard">Dashboard</a>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- Scripts: phần chung (theme, i18n) → dữ liệu → main (riêng trang này).
+       Dùng script thường (không phải ES module) để chạy được trên file:// -->
+  <script src="assets/js/theme.js"></script>
+  <script src="assets/js/i18n.js"></script>
+  <script src="data/projects-data.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

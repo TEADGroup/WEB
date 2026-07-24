@@ -1,0 +1,137 @@
+/* =====================================================================
+   base.css — PHẦN CHUNG của toàn bộ site (index / admin / dashboard)
+   ---------------------------------------------------------------------
+   Chứa: tokens theme (sáng/tối), reset, .container, .grad-text,
+         các "primitive" thiết kế (.glass, .btn, .icon-btn), .reveal.
+   Nguyên tắc (xem CLAUDE.md): để restyle → đổi BIẾN trong :root,
+   không sửa CSS component. Mỗi trang nạp file này TRƯỚC, rồi nạp
+   file CSS riêng của trang đó (được phép OVERRIDE).
+   Design system: design-system/tea-automation/MASTER.md
+   ===================================================================== */
+
+/* ===================== THEME VARIABLES ===================== */
+:root {
+  --accent: #2563eb;       /* xanh dương engineering (chính) */
+  --accent-2: #1d4ed8;     /* xanh dương đậm (hover / độ sâu) */
+  --neon: #22d3ee;         /* cyan neon (highlight) */
+  --grad: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #22d3ee 100%);
+  --radius: 16px;
+  --shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+  --maxw: 1180px;
+
+  /* Spacing scale — density marketing (xem MASTER.md) */
+  --space-xs: 4px;   --space-sm: 8px;   --space-md: 24px;
+  --space-lg: 32px;  --space-xl: 48px;  --space-2xl: 64px;  --space-3xl: 96px;
+
+  /* Status semantics — dashboard (xem pages/dashboard.md) */
+  --status-ok: #22c55e;  --status-warn: #f59e0b;
+  --status-fault: #ef4444;  --status-info: #3b82f6;
+}
+
+/* Dark (mặc định — slate "control-room", hợp phong cách kỹ thuật) */
+[data-theme="dark"] {
+  --bg: #0f172a;                 /* slate-900 */
+  --bg-2: #1e293b;               /* slate-800 */
+  --surface: rgba(148, 163, 184, 0.06);
+  --surface-strong: rgba(148, 163, 184, 0.10);
+  --text: #f8fafc;               /* slate-50 */
+  --text-muted: #94a3b8;         /* slate-400 */
+  --border: rgba(148, 163, 184, 0.16);
+  --hero-glow: rgba(37, 99, 235, 0.30);
+  --orb-op: 0.55;
+}
+
+/* Light — đã làm DỊU (đỡ chói mắt): nền xám mềm, bớt trắng tinh, giảm tương phản */
+[data-theme="light"] {
+  --bg: #f1f5f9;                 /* slate-100 — mềm thay vì trắng sáng */
+  --bg-2: #e2e8f0;               /* slate-200 */
+  --surface: rgba(255, 255, 255, 0.55);   /* bớt chói */
+  --surface-strong: rgba(255, 255, 255, 0.75);
+  --text: #0f172a;               /* slate-900 thay vì đen tuyền → đỡ gắt */
+  --text-muted: #475569;         /* slate-600 */
+  --border: rgba(15, 23, 42, 0.10);
+  --hero-glow: rgba(37, 99, 235, 0.14);
+  --orb-op: 0.28;
+  --shadow: 0 10px 32px rgba(15, 23, 42, 0.10);
+}
+
+/* ===================== RESET ===================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+a { color: inherit; text-decoration: none; }
+img, svg { display: block; }
+ul { list-style: none; }
+
+/* ===================== LAYOUT HELPERS ===================== */
+.container { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 22px; }
+
+/* Inter cho heading (theo design system — bỏ Space Grotesk) + tracking chặt cho cảm giác display */
+h1, h2, h3 { font-family: 'Inter', system-ui, sans-serif; line-height: 1.15; letter-spacing: -0.02em; font-weight: 700; }
+.grad-text {
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+/* Tabular figures cho data/KPI/sensor — chống nhảy số (xem pages/dashboard.md) */
+.tabular, .kpi-num, .dev-metric b, .rpt-table td.num, #clock, .ch-now, .alert-time, .live, .pill, .dev-id, .rpt-meta-v, .rpt-tag, .rpt-table td.num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
+
+/* ===================== GLASS CARD ===================== */
+.glass {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: var(--radius);
+}
+
+/* ===================== BUTTONS ===================== */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 24px; border-radius: 999px;
+  font-weight: 600; font-size: 0.95rem; cursor: pointer;
+  border: 1px solid transparent;
+  transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.2s ease;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn-primary { background: var(--grad); color: #fff; box-shadow: 0 8px 24px rgba(37,99,235,.4); }
+.btn-primary:hover { box-shadow: 0 10px 34px rgba(37,99,235,.6), 0 0 0 4px rgba(37,99,235,.14); }
+.btn-ghost { background: var(--surface); border-color: var(--border); color: var(--text); }
+
+.icon-btn {
+  width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center;
+  background: var(--surface); border: 1px solid var(--border);
+  cursor: pointer; color: var(--text);
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.icon-btn:hover { background: var(--surface-strong); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(37,99,235,.25); }
+.btn:active, .icon-btn:active { transform: scale(.96); }
+.lang-btn { width: auto; padding: 0 12px; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; }
+
+/* ===================== FOCUS (a11y — focus ring hiện rõ) ===================== */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+.btn:focus-visible, .icon-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ===================== REVEAL ANIMATION (chung) =====================
+   .reveal.visible phải luôn nằm CUỐI (cùng specificity) để thắng các variant. */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease; }
+.reveal.from-left  { transform: translateX(-42px); }
+.reveal.from-right { transform: translateX(42px); }
+.reveal.from-up    { transform: translateY(48px); }
+.reveal.from-scale { transform: scale(0.92); }
+.reveal.from-blur  { filter: blur(10px); }
+.reveal.visible { opacity: 1; transform: none; filter: none; }
+
+/* ===================== ACCESSIBILITY: giảm motion (phần chung) ===================== */
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1 !important; transform: none !important; filter: none !important; }
+  html { scroll-behavior: auto; }
+}
