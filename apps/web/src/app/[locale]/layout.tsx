@@ -1,31 +1,65 @@
+import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
 import type { Metadata } from 'next';
-import { Inter, Space_Grotesk } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 
 import { isLocale, routing } from '@/i18n/routing';
-import { ThemeProvider } from '@/components/theme/ThemeProvider';
-import { NoFlashScript } from '@/components/layout/NoFlashScript';
-import { ThemeBackground } from '@/components/layout/ThemeBackground';
 import { PublicHeader } from '@/components/layout/PublicHeader';
 import { PublicFooter } from '@/components/layout/PublicFooter';
+import { JsonLd } from '@/components/layout/JsonLd';
 
 import '@/styles/globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
-const display = Space_Grotesk({ subsets: ['latin'], variable: '--font-display', display: 'swap' });
-
-export const metadata: Metadata = {
-  title: { default: 'TEA Co., Ltd', template: '%s · TEA Co., Ltd' },
-  description:
-    'TEA Co., Ltd — tự động hoá công nghiệp & điện tự động. Giải pháp kỹ thuật tích hợp cho nhà máy và công trình.',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
-  icons: { icon: '/images/logo.png', apple: '/images/logo.png' },
-};
+const display = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-display',
+  display: 'swap',
+  weight: ['500', '600', '700', '800'],
+});
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://teagroup.vn';
+
+  return {
+    title: { default: 'TEA Co., Ltd', template: '%s · TEA Co., Ltd' },
+    description:
+      locale === 'vi'
+        ? 'TEA Co., Ltd — tự động hoá công nghiệp & điện tự động. Giải pháp kỹ thuật tích hợp cho nhà máy và công trình.'
+        : 'TEA Co., Ltd — industrial automation & electrical control. Integrated engineering solutions for factories and facilities.',
+    metadataBase: new URL(siteUrl),
+    alternates: {
+      canonical: `/${locale}`,
+      languages: {
+        vi: '/vi',
+        en: '/en',
+      },
+    },
+    openGraph: {
+      title: 'TEA Co., Ltd',
+      description:
+        locale === 'vi'
+          ? 'Tự động hoá công nghiệp & điện tự động'
+          : 'Industrial Automation & Electrical Control',
+      url: `/${locale}`,
+      siteName: 'TEA Co., Ltd',
+      locale: locale === 'vi' ? 'vi_VN' : 'en_US',
+      type: 'website',
+      images: [{ url: '/og-image.png', width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'TEA Co., Ltd',
+      description: 'Industrial Automation & Electrical Control',
+    },
+    icons: { icon: '/favicon.svg', apple: '/apple-touch-icon.png' },
+  };
 }
 
 export default async function LocaleLayout({
@@ -37,26 +71,33 @@ export default async function LocaleLayout({
 }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  // Enable static rendering per locale.
   setRequestLocale(locale);
-  // Forward the full message bundle to client components (header/toggle/etc.).
   const messages = await getMessages();
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://*.supabase.co';
+
   return (
-    <html lang={locale} className={`${inter.variable} ${display.variable}`} suppressHydrationWarning>
+    <html lang={locale} className={`${inter.variable} ${display.variable}`}>
+      <head>
+        <link rel="preconnect" href={supabaseUrl} crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href={supabaseUrl} />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+      </head>
       <body className="font-sans antialiased">
-        {/* Runs synchronously before paint to set the time-of-day background
-            variables — prevents a flash of the SSR `day` default. */}
-        <NoFlashScript />
-        {/* Forwards server messages to client components (LanguageSwitcher,
-            ThemeToggle, PublicHeader). */}
+        <JsonLd />
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-brand-blue focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:shadow-lg"
+        >
+          Skip to main content
+        </a>
         <NextIntlClientProvider messages={messages}>
-          <ThemeProvider>
-            <ThemeBackground />
-            <PublicHeader />
-            <main className="mx-auto w-full max-w-7xl px-4">{children}</main>
-            <PublicFooter />
-          </ThemeProvider>
+          <PublicHeader />
+          <main id="main-content" className="mx-auto w-full">{children}</main>
+          <PublicFooter />
         </NextIntlClientProvider>
       </body>
     </html>

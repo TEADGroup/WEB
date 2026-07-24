@@ -4,6 +4,9 @@ node_modules/
 .pnp.*
 .yarn/*
 
+# ---------- Turbo cache ----------
+.turbo/
+
 # ---------- Build / Next.js ----------
 .next/
 out/
@@ -47,6 +50,34 @@ desktop.ini
 
 # ---------- Reference material (kept on disk, not part of the project) ----------
 docs-reference/
+
+# ---------- Claude Code local artifacts ----------
+.claude/raw_result.txt
+.claude/hooks/permission-bridge.mjs
+.claude/CLAUDE.md
+.claude/settings.json
+.claude/hooks/
+.claude/agent-memory/
+.claude/agents/
+.claude/commands/
+.claude/skills/
+
+# ---------- Continue.dev (local IDE extension) ----------
+.continue/
+
+# ---------- MCP local config ----------
+.mcp.json
+
+# ---------- Temp / Debug ----------
+console-errors*.txt
+login-page*
+login-responsive*
+image.png
+skill.png
+timeline-*.png
+
+# ---------- Telegram MCP runtime data ----------
+packages/telegram-mcp/src/pending.json
 
 # ---------- Misc ----------
 *.local

@@ -22,28 +22,55 @@
   },
   "Home": {
     "heroEyebrow": "Tự động hoá công nghiệp & Điện tự động",
-    "heroTitle": "Kiến tạo nhà máy tương lai cùng TEA Group",
-    "heroSubtitle": "Giải pháp kỹ thuật tích hợp, tủ điện điều khiển, PLC/SCADA và tự động hoá dây chuyền cho nhà máy và công trình.",
-    "heroCta": "Dịch vụ của chúng tôi",
-    "heroSecondary": "Liên hệ tư vấn",
-    "statsTitle": "Năng lực nổi bật",
+    "heroTitle": "Giải pháp tự động hóa — từ thiết kế đến vận hành",
+    "heroSubtitle": "Cùng TEA Group, nhà máy của bạn vận hành ổn định, an toàn và tối ưu hơn với các giải pháp tích hợp: tủ điện điều khiển, PLC/SCADA và tự động hoá dây chuyền.",
+    "heroCta": "Khảo sát miễn phí",
+    "heroSecondary": "Xem giải pháp",
+    "heroTrustTitle": "Đối tác tin cậy",
+    "statsTitle": "Kinh nghiệm",
     "solutionsEyebrow": "Năng lực",
     "solutionsTitle": "Giải pháp & Dịch vụ",
     "solutionsSubtitle": "Từ thiết kế đến vận hành — chúng tôi đồng hành cùng nhà máy của bạn.",
     "projectsEyebrow": "Thực nghiệm",
     "projectsTitle": "Dự án",
     "projectsSubtitle": "Các dự án tiêu biểu của TEA Group, trình bày dưới dạng sơ đồ tương tác.",
-    "projectsComingSoon": "Sơ đồ cây dự án tương tác đang được hoàn thiện (Giai đoạn 3)."
+    "projectsComingSoon": "Sơ đồ cây dự án tương tác đang được hoàn thiện (Giai đoạn 3).",
+    "painEyebrow": "Nỗi đau của bạn",
+    "painTitle": "Những vấn đề nhà máy thường gặp",
+    "painLead": "Bạn có từng...",
+    "pain1Title": "Downtime kéo dài",
+    "pain1Desc": "Mỗi giờ ngừng sản xuất có thể khiến bạn thiệt hại hàng trăm triệu. Khi không có đội ngũ bảo trì kịp thời, sự cố nhỏ thành thảm họa.",
+    "pain2Title": "Dữ liệu không đồng bộ",
+    "pain2Desc": "Số liệu sản xuất nằm rải rác giữa các bộ phận — không có cái nhìn tổng thể, khó ra quyết định kịp thời.",
+    "pain3Title": "Hệ thống cũ cần nâng cấp",
+    "pain3Desc": "Bạn muốn hiện đại hóa nhà máy nhưng lo ngại gián đoạn sản xuất, thời gian chết kéo dài và rủi ro kỹ thuật.",
+    "pain4Title": "Không kiểm soát chất lượng",
+    "pain4Desc": "Kiểm tra thủ công dễ bỏ sót lỗi, tỉ lệ phế phẩm cao, khó truy xuất nguồn gốc khi có sự cố.",
+    "painCta": "TEA Group có giải pháp cho từng vấn đề →",
+    "testimonialEyebrow": "Khách hàng nói gì",
+    "testimonialTitle": "Tin tưởng & Hợp tác",
+    "testimonialLead": "Hàng chục nhà máy đã đồng hành cùng TEA Group — đây là những gì họ chia sẻ.",
+    "partnersEyebrow": "✦ KHÁCH HÀNG TIÊU BIỂU"
   },
   "About": {
     "eyebrow": "Về chúng tôi",
     "title": "Giới thiệu",
-    "lead": "TEA Group chuyên tự động hoá công nghiệp, điện tự động và tích hợp hệ thống — cung cấp giải pháp kỹ thuật trọn gói cho nhà máy và công trình.",
+    "lead": "Từ năm 2009, TEA Group đã đồng hành cùng hơn 50 nhà máy trên khắp Việt Nam trong hành trình tự động hóa — giúp họ vận hành ổn định, an toàn và hiệu quả hơn.",
     "missionTitle": "Tầm nhìn & Sứ mệnh",
     "mission": "Kiến tạo nhà máy thông minh, an toàn và hiệu quả thông qua các giải pháp kỹ thuật tích hợp, bền vững.",
-    "capabilityTitle": "Năng lực kỹ thuật",
     "teamTitle": "Đội ngũ",
-    "team": "Đội ngũ kỹ sư giàu kinh nghiệm, luôn cập nhật công nghệ mới để mang lại giá trị thực cho khách hàng."
+    "team": "Đội ngũ kỹ sư giàu kinh nghiệm, luôn cập nhật công nghệ mới để mang lại giá trị thực cho khách hàng.",
+    "valuePropsTitle": "Giá trị nổi bật",
+    "valuePropsLead": "Tại sao chọn TEA Group?",
+    "value1Title": "Đội ngũ kỹ sư giàu kinh nghiệm",
+    "value1Desc": "Sở hữu chứng chỉ quốc tế về tự động hóa và điện công nghiệp, đảm bảo chất lượng và an toàn vận hành.",
+    "value2Title": "Chuẩn quốc tế",
+    "value2Desc": "Thiết kế và thi công tuân thủ tiêu chuẩn IEC, ISA, đáp ứng yêu cầu khắt khe của nhà máy hiện đại.",
+    "value3Title": "Hỗ trợ 24/7",
+    "value3Desc": "Đội ngũ kỹ thuật sẵn sàng phản hồi mọi lúc, bảo đảm hệ thống vận hành liên tục không gián đoạn.",
+    "value4Title": "Giải pháp tùy chỉnh",
+    "value4Desc": "Phân tích nhu cầu cụ thể từng ngành — sản xuất, năng lượng, hạ tầng — để thiết kế giải pháp tối ưu.",
+    "aboutCta": "Liên hệ tư vấn"
   },
   "Solutions": {
     "eyebrow": "Năng lực",
@@ -85,9 +112,56 @@
     "address": "294/41/18 Đường số 8, P. Thông Tây Hội, TP. Hồ Chí Minh",
     "rights": "Mọi quyền được bảo lưu."
   },
+  "Login": {
+    "title": "Đăng nhập Quản trị",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "submit": "Đăng nhập",
+    "loggingIn": "Đang đăng nhập…",
+    "error": "Email hoặc mật khẩu không đúng"
+  },
+  "Admin": {
+    "dashboard": "Tổng quan",
+    "projects": "Dự án",
+    "hdvhUpload": "HDVH + AI",
+    "users": "Người dùng",
+    "settings": "Cài đặt",
+
+
+    "aiChat": "AI Chat",
+    "logout": "Đăng xuất",
+    "save": "Lưu",
+    "cancel": "Huỷ",
+    "delete": "Xoá",
+    "confirm": "Xác nhận",
+    "create": "Tạo mới",
+    "edit": "Sửa",
+    "preview": "Xem trước",
+    "accept": "Chấp nhận & Xuất bản",
+    "back": "Quay lại",
+    "upload": "Tải lên",
+    "parseStatus": "Trạng thái phân tích",
+    "noData": "Không có dữ liệu",
+    "backToSite": "Về trang chủ",
+    "customPrompt": "Hướng dẫn AI (tuỳ chọn)",
+    "customPromptHint": "VD: Tài liệu này về hệ thống băng tải, chú ý thông số kỹ thuật motor và cảnh báo an toàn."
+  },
   "Common": {
     "loading": "Đang tải…",
     "comingSoon": "Sắp ra mắt",
     "back": "Quay lại"
+  },
+  "Industry4": {
+    "eyebrow": "Công nghệ 4.0",
+    "title": "Công nghệ Nhà máy Thông minh",
+    "subtitle": "Giải pháp chuyển đổi số cho sản xuất hiện đại."
+  },
+  "Blog": {
+    "eyebrow": "Kiến thức",
+    "title": "Blog Kỹ thuật",
+    "subtitle": "Chia sẻ kiến thức ngành, hướng dẫn kỹ thuật và tin tức.",
+    "readMore": "Đọc thêm",
+    "viewAll": "Tất cả bài viết",
+    "readingTime": "{{minutes}} phút đọc"
   }
 }

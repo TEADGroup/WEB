@@ -46,6 +46,15 @@ export const parseStatusSchema = z.enum(['idle', 'pending', 'processing', 'done'
 export type ParseStatus = z.infer<typeof parseStatusSchema>;
 
 // ---------------------------------------------------------------------------
+// Image with optional caption
+// ---------------------------------------------------------------------------
+export const projectImageSchema = z.object({
+  url: z.string(),
+  caption: z.string().default(''),
+});
+export type ProjectImage = z.infer<typeof projectImageSchema>;
+
+// ---------------------------------------------------------------------------
 // Attachments (HDVH documents stored in Supabase Storage `project-docs`)
 // ---------------------------------------------------------------------------
 export const attachmentSchema = z.object({
@@ -70,9 +79,18 @@ export const projectInputSchema = z.object({
   status: projectStatusSchema.default('draft'),
   description_vi: z.string().optional(),
   description_en: z.string().optional(),
-  images: z.array(z.string()).default([]),
+  images: z.array(projectImageSchema).default([]),
   attachments: z.array(attachmentSchema).default([]),
   /** Persisted xyflow/dagre node positions from the admin editor. */
   position: z.unknown().optional(),
+
+  /** Featured project fields for the 3D timeline section. */
+  is_featured: z.boolean().default(false),
+  featured_year: z.number().int().optional(),
+  featured_month: z.number().int().min(1).max(12).optional(),
+  featured_order: z.number().int().default(0),
+  company_logo_url: z.string().optional(),
+  scope_vi: z.string().optional(),
+  scope_en: z.string().optional(),
 });
 export type ProjectInput = z.infer<typeof projectInputSchema>;

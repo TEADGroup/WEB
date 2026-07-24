@@ -56,6 +56,10 @@ export const projectSectionSchema = z.object({
   content_en: z.string().describe('Detailed content, may be multi-line (English)'),
   /** Optional bullet items (e.g. equipment list entries, spec rows). */
   items: z.array(z.string()).optional(),
+  /** Image filenames belonging to this section, from [HÌNH: ...] markers. */
+  image_names: z.array(z.string()).optional().describe(
+    'Tên file hình ảnh thuộc section này, lấy từ các marker [HÌNH: tên_file] trong tài liệu',
+  ),
 });
 export type ProjectSection = z.infer<typeof projectSectionSchema>;
 
@@ -63,8 +67,10 @@ export type ProjectSection = z.infer<typeof projectSectionSchema>;
 // The full result the AI must return
 // ---------------------------------------------------------------------------
 export const projectSectionsResultSchema = z.object({
-  project_title_vi: z.string().optional().describe('Tên dự án nếu có trong tài liệu (Tiếng Việt)'),
+  project_title_vi: z.string().optional().describe('Tên dự án nếu có trong tài liệu (Tiếng Việt) — thường là tên hệ thống/máy/dây chuyền'),
   project_title_en: z.string().optional().describe('Project name if present (English)'),
+  client: z.string().optional().describe('Tên khách hàng / chủ đầu tư — thường xuất hiện dạng "Công ty TNHH..." trong phần đầu tài liệu'),
+  location: z.string().optional().describe('Địa điểm lắp đặt — thường xuất hiện dạng "tỉnh/thành phố" trong tài liệu'),
   summary_vi: z.string().optional().describe('Tóm tắt 1–2 câu về hệ thống (Tiếng Việt)'),
   summary_en: z.string().optional().describe('1–2 sentence system summary (English)'),
   sections: z.array(projectSectionSchema).min(1),

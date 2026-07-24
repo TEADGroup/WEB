@@ -6,33 +6,31 @@ import { z } from 'zod';
  */
 
 // ---------------------------------------------------------------------------
-// Dynamic time-of-day theme (Phase 1 hook + Phase 4 admin editor)
+// AI Provider config (which AI provider and its settings)
 // ---------------------------------------------------------------------------
-export const themePhaseSchema = z.enum(['dawn', 'day', 'dusk', 'night']);
-export type ThemePhase = z.infer<typeof themePhaseSchema>;
+export const aiConfigSchema = z.object({
+  // Provider selection: 'ollama', 'openrouter', or 'anthropic'
+  provider: z.enum(['ollama', 'openrouter', 'anthropic']).optional(),
 
-export const THEME_PHASES: ThemePhase[] = ['dawn', 'day', 'dusk', 'night'];
+  // Ollama (local, free, no API key)
+  ollamaBaseUrl: z.string().default('http://localhost:11434'),
+  ollamaModel: z.string().default('qwen2.5vl:7b'),
 
-export const themePhaseConfigSchema = z.object({
-  from: z.string(), // hex color
-  via: z.string().optional(),
-  to: z.string(), // hex color
-  accent: z.string(), // hex — neon accent
-  mode: z.enum(['light', 'dark']),
+  // OpenRouter (free tier API access to multiple models)
+  openrouterApiKey: z.string().optional(),
+  openrouterModel: z.string().optional(),
+  openrouterBaseUrl: z.string().optional(),
+
+  // Anthropic (direct API, paid)
+  anthropicApiKey: z.string().optional(),
 });
-export type ThemePhaseConfig = z.infer<typeof themePhaseConfigSchema>;
+export type AiConfig = z.infer<typeof aiConfigSchema>;
 
-export const themeConfigSchema = z.object({
-  // Fixed 4 phases as an explicit object (NOT z.record) so the inferred type is
-  // complete — indexing by phase never yields `undefined`.
-  phases: z.object({
-    dawn: themePhaseConfigSchema,
-    day: themePhaseConfigSchema,
-    dusk: themePhaseConfigSchema,
-    night: themePhaseConfigSchema,
-  }),
-});
-export type ThemeConfig = z.infer<typeof themeConfigSchema>;
+export const DEFAULT_AI_CONFIG: AiConfig = {
+  provider: 'ollama',
+  ollamaBaseUrl: 'http://localhost:11434',
+  ollamaModel: 'qwen2.5vl:7b',
+};
 
 // ---------------------------------------------------------------------------
 // Company info

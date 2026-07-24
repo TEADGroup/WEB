@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80">
+  <rect width="200" height="80" fill="none"/>
+  <text x="100" y="46" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#333" text-anchor="middle" letter-spacing="1">
+    Vinacosmo
+  </text>
+  <line x1="40" y1="56" x2="160" y2="56" stroke="#ddd" stroke-width="0.5"/>
+</svg>

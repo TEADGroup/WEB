@@ -100,3 +100,7 @@ create policy "audit_authenticated_insert"
 create policy "audit_admin_select"
   on public.audit_logs for select
   using (public.current_user_role() = 'admin');
+
+create policy "audit_admin_delete"
+  on public.audit_logs for delete
+  using (public.current_user_role() = 'admin');

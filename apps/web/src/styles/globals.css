@@ -3,69 +3,204 @@
 @tailwind utilities;
 
 /* ------------------------------------------------------------------ */
-/* Animatable theme color properties.                                   */
-/* Registering them as <color> lets the browser interpolate the gradient*/
-/* stops smoothly when the time-of-day phase changes. CSS @property is  */
-/* the trick that makes gradient transitions work without a JS rAF loop. */
+/* Brand design tokens — single source of truth for all components.    */
+/* Use these CSS custom properties as the central palette. Map them    */
+/* into Tailwind via tailwind.config.ts `theme.extend.colors.brand`.   */
 /* ------------------------------------------------------------------ */
-@property --tea-bg-from {
-  syntax: '<color>';
-  inherits: true;
-  initial-value: #dbeafe;
-}
-@property --tea-bg-via {
-  syntax: '<color>';
-  inherits: true;
-  initial-value: #e0f2fe;
-}
-@property --tea-bg-to {
-  syntax: '<color>';
-  inherits: true;
-  initial-value: #f8fafc;
-}
-@property --tea-accent {
-  syntax: '<color>';
-  inherits: true;
-  initial-value: #0ea5e9;
+:root {
+  /* Brand palette (from TEA Group logo: blue #0099FF, green #00A651, red #FF3333) */
+  --brand-blue: #0099FF;
+  --brand-cyan: #33B5FF;
+  --brand-green: #00A651;
+  --brand-red: #FF3333;
+  --brand-navy: #0A1626;
+
+  /* Premium gradient system */
+  --gradient-brand: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-cyan) 100%);
+  --gradient-premium: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-success: linear-gradient(135deg, var(--brand-green) 0%, #10b981 100%);
+  --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+  --gradient-danger: linear-gradient(135deg, var(--brand-red) 0%, #dc2626 100%);
+
+  /* Surfaces */
+  --surface-base: #FFFFFF;
+  --surface-card: rgba(255, 255, 255, 0.40);
+  --surface-glass: rgba(255, 255, 255, 0.60);
+
+  /* Deep dark mode support */
+  --surface-dark: #0f172a;
+  --surface-dark-elevated: #1e293b;
+  --surface-dark-card: rgba(30, 41, 59, 0.5);
+
+  /* Text hierarchy */
+  --text-primary: #1E293B;
+  --text-secondary: #64748B;
+  --text-muted: #94A3B8;
+
+  /* Status colors */
+  --status-published: #10b981;
+  --status-draft: #f59e0b;
+  --status-archived: #64748b;
+
+  /* Radii */
+  --radius-card: 1rem;
+  --radius-button: 0.5rem;
+  --radius-input: 0.5rem;
+
+  /* Premium shadows */
+  --shadow-card: 0 8px 32px rgba(0,153,255,0.12), 0 2px 8px rgba(0,0,0,0.04);
+  --shadow-card-hover: 0 16px 64px rgba(0,153,255,0.18), 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-glow-blue: 0 0 40px rgba(0, 153, 255, 0.15);
+  --shadow-glow-green: 0 0 40px rgba(0, 166, 81, 0.15);
+
+  /* Interactive states */
+  --interactive-hover: rgba(0, 153, 255, 0.08);
+  --interactive-active: rgba(0, 153, 255, 0.12);
+  --border-focus: rgba(0, 153, 255, 0.3);
+
+  /* Partner cards */
+  --color-partner-border: rgba(0, 153, 255, 0.12);
+  --color-partner-glow: rgba(0, 153, 255, 0.08);
+  --color-partner-badge-border: rgba(0, 153, 255, 0.2);
+  --color-partner-badge-bg: rgba(0, 153, 255, 0.06);
+  --section-partners-bg: #EFF3F8;
+
+  /* Backdrop blurs */
+  --backdrop-blur-card: 16px;
+  --backdrop-blur-nav: 12px;
 }
 
-:root {
-  /* SSR-safe defaults (the `day` phase). The no-flash inline script in the
-     root layout overrides these before hydration using the VN clock. */
-  --tea-bg-from: #dbeafe;
-  --tea-bg-via: #e0f2fe;
-  --tea-bg-to: #f8fafc;
-  --tea-accent: #0ea5e9;
+/* ── Keyframes ── */
+@keyframes card-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(0,153,255,0.08); }
+  50% { box-shadow: 0 0 30px rgba(0,153,255,0.16); }
+}
+@keyframes data-flow {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
+}
+@keyframes overlay-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.7; }
+}
+@keyframes star-drift {
+  from { background-position: 0 0, 0 0, 0 0; }
+  to { background-position: 200px 200px, -300px 300px, 250px -250px; }
+}
+@keyframes marquee-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ── Partner marquee: infinite auto-scroll left, pause on hover ── */
+.marquee-track {
+  animation-name: marquee-left;
+  animation-duration: 20s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
 }
 
 html {
   height: 100%;
   scroll-behavior: smooth;
+  /* Optimize for smooth scroll animations */
+  scrollbar-gutter: stable;
 }
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 body {
   min-height: 100dvh;
-  background: linear-gradient(135deg, var(--tea-bg-from), var(--tea-bg-via), var(--tea-bg-to));
+  font-size: clamp(16px, 1.0625rem, 18px);
+  background: linear-gradient(135deg, #E3F1FB, #E9F6EF, #F6F8FB);
   background-attachment: fixed;
-  color: #0f172a;
-  color-scheme: light;
-  transition:
-    --tea-bg-from 1.5s ease,
-    --tea-bg-via 1.5s ease,
-    --tea-bg-to 1.5s ease,
-    --tea-accent 1.5s ease,
-    color 0.3s ease;
+  color: var(--text-primary);
 }
 
-html.dark body {
-  color: #e5e7eb;
-  color-scheme: dark;
+/* ── Video player custom controls — match the grey bar from the mock    ── */
+.hero-video-wrapper video::-webkit-media-controls-panel {
+  background: linear-gradient(0deg, rgba(30,41,59,0.92) 0%, rgba(30,41,59,0.65) 60%, transparent 100%) !important;
+  backdrop-filter: blur(4px);
+}
+
+.hero-video-wrapper video::-webkit-media-controls-current-time-display,
+.hero-video-wrapper video::-webkit-media-controls-time-remaining-display {
+  font-family: system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  text-shadow: none;
+  color: #e2e8f0;
+}
+
+.hero-video-wrapper video::-webkit-media-controls-timeline {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.15);
+}
+
+.hero-video-wrapper video::-webkit-media-controls-timeline::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #0099FF;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  cursor: pointer;
+}
+
+.hero-video-wrapper video::-webkit-media-controls-volume-slider {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.15);
+}
+
+.hero-video-wrapper video::-webkit-media-controls-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #0099FF;
+  border: 2px solid #fff;
+}
+
+.hero-video-wrapper video::-webkit-media-controls-play-button,
+.hero-video-wrapper video::-webkit-media-controls-mute-button {
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+  transition: filter 0.2s;
+}
+.hero-video-wrapper video::-webkit-media-controls-play-button:hover,
+.hero-video-wrapper video::-webkit-media-controls-mute-button:hover {
+  filter: drop-shadow(0 1px 4px rgba(0,153,255,0.5));
+}
+
+.hero-video-wrapper video::-webkit-media-controls-picture-in-picture-button {
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+  transition: opacity 0.2s;
+}
+
+.hero-video-wrapper video::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.15);
+}
+
+.hero-video-wrapper video {
+  border-radius: inherit;
 }
 
 /* Respect users who prefer reduced motion. */
@@ -77,4 +212,52 @@ html.dark body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ── 3D depth utilities ── */
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.perspective-500 {
+  perspective: 500px;
+}
+
+.perspective-800 {
+  perspective: 800px;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+/* ── Glass morphism cards ── */
+.glass-card {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-card-strong {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* ── Smooth gradient transitions ── */
+@property --gradient-pos {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
+
+.animate-gradient {
+  animation: gradient-shift 8s ease-in-out infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { --gradient-pos: 0%; }
+  50% { --gradient-pos: 100%; }
 }

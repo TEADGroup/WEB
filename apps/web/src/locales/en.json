@@ -22,28 +22,55 @@
   },
   "Home": {
     "heroEyebrow": "Industrial automation & electrical control",
-    "heroTitle": "Engineering the factory of the future with TEA Group",
-    "heroSubtitle": "Integrated technical solutions, control cabinets, PLC/SCADA and line automation for plants and projects.",
-    "heroCta": "Our services",
-    "heroSecondary": "Get in touch",
-    "statsTitle": "Key capabilities",
+    "heroTitle": "Automation solutions — from design to operations",
+    "heroSubtitle": "With TEA Group, your plant runs reliably, safely, and efficiently with integrated solutions: control cabinets, PLC/SCADA, and production line automation.",
+    "heroCta": "Free site survey",
+    "heroSecondary": "View solutions",
+    "heroTrustTitle": "Trusted partners",
+    "statsTitle": "Experience by numbers",
     "solutionsEyebrow": "Capabilities",
     "solutionsTitle": "Solutions & Services",
     "solutionsSubtitle": "From design to operations — we partner with your plant end to end.",
     "projectsEyebrow": "Our work",
     "projectsTitle": "Projects",
     "projectsSubtitle": "Selected TEA Group projects, presented as an interactive diagram.",
-    "projectsComingSoon": "The interactive project tree is being finalized (Phase 3)."
+    "projectsComingSoon": "The interactive project tree is being finalized (Phase 3).",
+    "painEyebrow": "Pain points",
+    "painTitle": "Common plant challenges",
+    "painLead": "Have you ever...",
+    "pain1Title": "Extended downtime",
+    "pain1Desc": "Every hour of stopped production can cost you hundreds of millions in losses. Without a timely maintenance team, a small issue becomes a disaster.",
+    "pain2Title": "Disconnected data",
+    "pain2Desc": "Production data scattered across departments — no single source of truth, hard to make timely decisions.",
+    "pain3Title": "Outdated systems need upgrade",
+    "pain3Desc": "You want to modernize your plant but worry about production disruption, extended downtime, and technical risks.",
+    "pain4Title": "Quality control gaps",
+    "pain4Desc": "Manual inspection misses defects, high rejection rates, difficult traceability when issues arise.",
+    "painCta": "TEA Group has solutions for each challenge →",
+    "testimonialEyebrow": "Client voices",
+    "testimonialTitle": "Trust & Partnership",
+    "testimonialLead": "Dozens of plants have partnered with TEA Group — here's what they have to say.",
+    "partnersEyebrow": "✦ FEATURED CLIENTS"
   },
   "About": {
     "eyebrow": "About us",
     "title": "About",
-    "lead": "TEA Group specializes in industrial automation, electrical control, and system integration — delivering turnkey technical solutions for plants and projects.",
+    "lead": "Since 2009, TEA Group has partnered with over 50 plants across Vietnam on their automation journey — helping them run more reliably, safely, and efficiently.",
     "missionTitle": "Vision & Mission",
     "mission": "Building smart, safe, and efficient plants through integrated, sustainable engineering solutions.",
-    "capabilityTitle": "Technical capabilities",
     "teamTitle": "Team",
-    "team": "Experienced engineers who keep up with the latest technology to deliver real value to clients."
+    "team": "Experienced engineers who keep up with the latest technology to deliver real value to clients.",
+    "valuePropsTitle": "Key values",
+    "valuePropsLead": "Why choose TEA Group?",
+    "value1Title": "Experienced Engineering Team",
+    "value1Desc": "Holding international certifications in automation and industrial electrical engineering, ensuring quality and operational safety.",
+    "value2Title": "International Standards",
+    "value2Desc": "Design and construction compliant with IEC, ISA standards, meeting the rigorous demands of modern plants.",
+    "value3Title": "24/7 Support",
+    "value3Desc": "Technical team ready to respond anytime, ensuring uninterrupted system operation and minimal downtime.",
+    "value4Title": "Customized Solutions",
+    "value4Desc": "Needs analysis per specific industry — manufacturing, energy, infrastructure — to design the optimal solution.",
+    "aboutCta": "Get a consultation"
   },
   "Solutions": {
     "eyebrow": "Capabilities",
@@ -85,9 +112,56 @@
     "address": "294/41/18 Street No. 8, Thong Tay Hoi Ward, Ho Chi Minh City",
     "rights": "All rights reserved."
   },
+  "Login": {
+    "title": "Admin Login",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "loggingIn": "Signing in…",
+    "error": "Invalid email or password"
+  },
+  "Admin": {
+    "dashboard": "Dashboard",
+    "projects": "Projects",
+    "hdvhUpload": "HDVH + AI",
+    "users": "Users",
+    "settings": "Settings",
+
+
+    "aiChat": "AI Chat",
+    "logout": "Sign out",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "create": "Create",
+    "edit": "Edit",
+    "preview": "Preview",
+    "accept": "Accept & Publish",
+    "back": "Back",
+    "upload": "Upload",
+    "parseStatus": "Parse status",
+    "noData": "No data",
+    "backToSite": "Back to site",
+    "customPrompt": "AI instructions (optional)",
+    "customPromptHint": "e.g.: This document is about a conveyor system, focus on motor specs and safety warnings."
+  },
   "Common": {
     "loading": "Loading…",
     "comingSoon": "Coming soon",
     "back": "Back"
+  },
+  "Industry4": {
+    "eyebrow": "Industry 4.0",
+    "title": "Smart Factory Technologies",
+    "subtitle": "Digital transformation solutions for modern manufacturing."
+  },
+  "Blog": {
+    "eyebrow": "Knowledge",
+    "title": "Technical Blog",
+    "subtitle": "Industry insights, technical guides, and company updates.",
+    "readMore": "Read more",
+    "viewAll": "All articles",
+    "readingTime": "{{minutes}} min read"
   }
 }
